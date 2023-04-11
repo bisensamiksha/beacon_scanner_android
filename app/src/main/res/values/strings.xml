@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BeaconPOC</string>
+    <string name="start_scan">Start Scan</string>
+    <string name="stop_scan">Stop Scan</string>
+    <string name="rssi_value">RSSI</string>
+    <string name="ibeacon_scanner">iBeacon Scanner</string>
+</resources>
