@@ -4,4 +4,7 @@
     <string name="stop_scan">Stop Scan</string>
     <string name="rssi_value">RSSI</string>
     <string name="ibeacon_scanner">iBeacon Scanner</string>
+    <string name="uuid">UUID</string>
+    <string name="minor">Minor</string>
+    <string name="major">Major</string>
 </resources>

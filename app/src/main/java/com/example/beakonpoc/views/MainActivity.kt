@@ -1,11 +1,9 @@
-package com.example.beakonpoc
+package com.example.beakonpoc.views
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,18 +18,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import com.example.beakonpoc.viewmodels.MainActivityViewModel
+import com.example.beakonpoc.R
+import com.example.beakonpoc.utils.Utils
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mainActivityViewMode: MainActivityViewMode
+    private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var distanceTV: TextView
     private lateinit var startBtn: Button
     private lateinit var stopBtn: Button
+    private lateinit var uuidTV: TextView
+    private lateinit var majorTV: TextView
+    private lateinit var minorTV: TextView
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var isBluetoothPermissionGranted = false
     private var isBluetoothAdminPermissionGranted = false
@@ -40,12 +42,13 @@ class MainActivity : AppCompatActivity() {
     private var isCoarseLocationPermissionGranted = false
     private var isFineLocationPermissionGranted = false
     private lateinit var bluetoothAdapter: BluetoothAdapter
+    private var isScanning = false
 
     @SuppressLint("MissingPermission")
     private var bluetoothActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                if(Utils.isBLESupported(bluetoothAdapter, this)) bluetoothAdapter.bluetoothLeScanner.startScan(callback)
+                if(Utils.isBLESupported(bluetoothAdapter, this)) mainActivityViewModel.startScan()
                 else Toast.makeText(applicationContext,"This device does not support BLE.",Toast.LENGTH_SHORT).show()
             }else{
                 Toast.makeText(
@@ -56,55 +59,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private var callback: ScanCallback = object : ScanCallback() {
-        @SuppressLint("MissingPermission")
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            super.onScanResult(callbackType, result)
-            Log.d("BLE Logs", "Success ${result.toString()}")
-
-            result?.let { scanResult ->
-                val payload = scanResult.scanRecord?.manufacturerSpecificData?.get(76)
-                if (payload != null && payload.size >= 23) {
-                    val uuidBytes =
-                        ByteBuffer.wrap(payload, 2, 18).order(ByteOrder.LITTLE_ENDIAN).long
-                    val major =
-                        ((payload[18].toInt() and 0xff) shl 8) or (payload[19].toInt() and 0xff)
-                    val minor =
-                        ((payload[20].toInt() and 0xff) shl 8) or (payload[21].toInt() and 0xff)
-                    val txPowerBeacon = payload[22].toInt()
-
-                    Log.d(
-                        "BLE Logs",
-                        "UUID: $uuidBytes, Major: $major, Minor: $minor, TxPower: $txPowerBeacon"
-                    )
-
-                    val rssi = scanResult.rssi
-                    runOnUiThread {
-                        distanceTV.text = rssi.toString()
-                    }
-
-                }
-                //for Eddystone
-                //val manufactuerIdGoogle = scanResult.scanRecord?.manufacturerSpecificData.get(0x0118)
-            }
-
-        }
-
-        override fun onScanFailed(errorCode: Int) {
-            Toast.makeText(applicationContext, "Scanning Failed", Toast.LENGTH_LONG).show()
-            Log.d("BLE Logs", "Failed $errorCode")
-            super.onScanFailed(errorCode)
-
-        }
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainActivityViewMode = ViewModelProvider(this).get(MainActivityViewMode::class.java)
+        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -127,7 +88,6 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-
         requestBluetoothScanPermission()
         initUI()
 
@@ -138,21 +98,41 @@ class MainActivity : AppCompatActivity() {
     private fun initUI() {
 
         distanceTV = findViewById(R.id.distance)
-
-        mainActivityViewMode.updateDistance().observe(this, Observer {
-            distanceTV.text = it.toString()
-        })
-
         startBtn = findViewById(R.id.startScan)
         stopBtn = findViewById(R.id.stopScan)
+        uuidTV = findViewById(R.id.uuidTv)
+        majorTV = findViewById(R.id.majorTv)
+        minorTV = findViewById(R.id.minorTv)
+
+        toggleBtn(isScanning)
+
+        mainActivityViewModel.updateRSSI().observe(this, androidx.lifecycle.Observer {
+            if(it == null){
+                distanceTV.text = "00"
+                uuidTV.text = "00"
+                majorTV.text = "00"
+                minorTV.text = "00"
+            }else{
+                distanceTV.text = it.rssi
+                uuidTV.text = it.uuid
+                majorTV.text = it.major
+                minorTV.text = it.minor
+            }
+        })
 
         startBtn.setOnClickListener {
             initScanner()
+            mainActivityViewModel.startScan()
+            isScanning = true
+            toggleBtn(isScanning)
         }
 
         stopBtn.setOnClickListener {
-            bluetoothAdapter.bluetoothLeScanner.stopScan(callback)
+            mainActivityViewModel.stopScan()
+            isScanning = false
+            toggleBtn(isScanning)
         }
+
     }
 
 
@@ -163,7 +143,6 @@ class MainActivity : AppCompatActivity() {
         bluetoothAdapter = bluetoothManager.adapter
 
         checkBluetoothState(bluetoothAdapter)
-
     }
 
 
@@ -173,7 +152,7 @@ class MainActivity : AppCompatActivity() {
             val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             bluetoothActivityResultLauncher.launch(enableIntent)
         }else{
-            bluetoothAdapter.bluetoothLeScanner.startScan(callback)
+            mainActivityViewModel.startScan()
         }
     }
 
@@ -230,11 +209,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @SuppressLint("MissingPermission")
-    override fun onDestroy() {
-        super.onDestroy()
-        bluetoothAdapter.bluetoothLeScanner.stopScan(callback)
+    private fun toggleBtn(isScanning: Boolean){
+        if (isScanning){
+            startBtn.isEnabled = false
+            startBtn.alpha = 0.7f
+            stopBtn.alpha = 1f
+            stopBtn.isEnabled = true
+        }else{
+            startBtn.isEnabled = true
+            stopBtn.alpha = 0.7f
+            startBtn.alpha = 1f
+            stopBtn.isEnabled = false
+        }
     }
-
 
 }
