@@ -15,9 +15,10 @@ class BLEManager(
     private val context: Context
 ) {
 
-    private val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    private val bluetoothManager =
+        context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val bluetoothAdapter = bluetoothManager.adapter
-    private val bluetoothScanner = bluetoothAdapter.bluetoothLeScanner
+    private var bluetoothScanner = bluetoothAdapter.bluetoothLeScanner
     private var iBeaconData = MutableLiveData<BeaconDataModel?>()
 
     private var callback: ScanCallback = object : ScanCallback() {
@@ -40,12 +41,15 @@ class BLEManager(
     }
 
     @SuppressLint("MissingPermission")
-    fun startScan(){
-        bluetoothScanner?.startScan(callback)
+    fun startScan() {
+        if (bluetoothScanner == null) {
+            bluetoothScanner = bluetoothManager.adapter.bluetoothLeScanner
+            bluetoothScanner.startScan(callback)
+        } else bluetoothScanner.startScan(callback)
     }
 
     @SuppressLint("MissingPermission")
-    fun stopScan(){
+    fun stopScan() {
         bluetoothScanner?.stopScan(callback)
     }
 
@@ -70,12 +74,14 @@ class BLEManager(
                 "UUID: $uuidBytes, Major: $major, Minor: $minor, TxPower: $txPowerBeacon"
             )
 
-            iBeaconData.postValue(BeaconDataModel(
-                uuidBytes.toString(),
-                major.toString(),
-                minor.toString(),
-                rssi.toString()
-            ))
+            iBeaconData.postValue(
+                BeaconDataModel(
+                    uuidBytes.toString(),
+                    major.toString(),
+                    minor.toString(),
+                    rssi.toString()
+                )
+            )
 
             //for Eddystone
             //val manufactuerIdGoogle = scanResult.scanRecord?.manufacturerSpecificData.get(0x0118)

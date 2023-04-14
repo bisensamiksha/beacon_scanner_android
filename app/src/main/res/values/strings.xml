@@ -7,4 +7,9 @@
     <string name="uuid">UUID</string>
     <string name="minor">Minor</string>
     <string name="major">Major</string>
+    <string name="permission_denied_title">Permissions required</string>
+    <string name="permission_denied_message">Please grant permissions to use App functionalities.</string>
+    <string name="ok">ok</string>
+    <string name="cancel">cancel</string>
+    <string name="you_have_not_granted_required_permissions_please_go_to_settings_and_grant_permissions_to_use_the_app">You have not granted required permissions. Please go to settings and grant permissions to use the App.</string>
 </resources>

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -30,6 +31,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    buildFeatures{
+        dataBinding true
+    }
 }
 
 dependencies {
@@ -45,5 +50,8 @@ dependencies {
     // Lifecycle components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
+
+    //Test Dependencies
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
 }
