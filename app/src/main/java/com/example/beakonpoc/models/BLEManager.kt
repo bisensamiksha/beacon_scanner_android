@@ -1,6 +1,5 @@
 package com.example.beakonpoc.models
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -13,7 +12,7 @@ import java.nio.ByteOrder
 
 class BLEManager(
     private val context: Context
-) {
+) : BluetoothAdapterWrapper {
 
     private val bluetoothManager =
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -21,13 +20,16 @@ class BLEManager(
     private var bluetoothScanner = bluetoothAdapter.bluetoothLeScanner
     private var iBeaconData = MutableLiveData<BeaconDataModel?>()
 
+    private var isScanningStarted = false
+
     private var callback: ScanCallback = object : ScanCallback() {
-        @SuppressLint("MissingPermission")
+
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
             Log.d("BLE Logs", "Success ${result.toString()}")
             result?.let { scanResult ->
                 processPayload(scanResult)
+                isScanningStarted = true
             }
 
         }
@@ -35,22 +37,34 @@ class BLEManager(
         override fun onScanFailed(errorCode: Int) {
             Toast.makeText(context, "Scanning Failed", Toast.LENGTH_LONG).show()
             Log.d("BLE Logs", "Failed $errorCode")
+            isScanningStarted = false
             super.onScanFailed(errorCode)
 
         }
     }
 
-    @SuppressLint("MissingPermission")
+    override fun isEnable(): Boolean {
+        return bluetoothAdapter.isEnabled
+    }
+
+    init {
+        iBeaconData.postValue(null)
+    }
+
     fun startScan() {
         if (bluetoothScanner == null) {
             bluetoothScanner = bluetoothManager.adapter.bluetoothLeScanner
             bluetoothScanner.startScan(callback)
         } else bluetoothScanner.startScan(callback)
+        isScanningStarted = true
     }
 
-    @SuppressLint("MissingPermission")
+
     fun stopScan() {
-        bluetoothScanner?.stopScan(callback)
+        if (isEnable()) {
+            bluetoothScanner?.stopScan(callback)
+        }
+        isScanningStarted = false
     }
 
     fun updateBeacon(): MutableLiveData<BeaconDataModel?> {
@@ -87,5 +101,9 @@ class BLEManager(
             //val manufactuerIdGoogle = scanResult.scanRecord?.manufacturerSpecificData.get(0x0118)
 
         }
+    }
+
+    fun isScanning(): Boolean {
+        return isScanningStarted
     }
 }

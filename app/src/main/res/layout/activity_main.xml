@@ -154,7 +154,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="40dp"
             android:padding="20dp"
-            android:text="@string/you_have_not_granted_required_permissions_please_go_to_settings_and_grant_permissions_to_use_the_app"
+            android:text="@string/permission_not_granted"
             android:textColor="@color/red"
             android:textSize="11sp"
             android:visibility="gone" />

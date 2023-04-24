@@ -7,7 +7,7 @@ import com.example.beakonpoc.models.BLEManager
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val bleManager = BLEManager(application)
+    val bleManager = BLEManager(application)
     val beaconLiveData = bleManager.updateBeacon()
 
     fun startScan() {
@@ -17,6 +17,10 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     fun stopScan() {
         bleManager.stopScan()
+    }
+
+    fun isBluetoothEnable(): Boolean {
+        return bleManager.isEnable()
     }
 
     override fun onCleared() {

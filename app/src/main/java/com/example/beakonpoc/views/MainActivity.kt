@@ -1,10 +1,7 @@
 package com.example.beakonpoc.views
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -28,19 +25,18 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    var isScanning = true
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var requiredPermissions = mutableListOf<String>()
     private var permissionsToGrantList = mutableListOf<String>()
-    private lateinit var bluetoothAdapter: BluetoothAdapter
 
-    @SuppressLint("MissingPermission")
-    private var bluetoothActivityResultLauncher =
+    var bluetoothActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                if (Utils.isBLESupported(bluetoothAdapter, this)) {
+                if (Utils.isBLESupported(this)) {
                     startScanning()
                 } else Toast.makeText(
                     applicationContext,
@@ -105,7 +101,6 @@ class MainActivity : AppCompatActivity() {
 
 
     @RequiresApi(Build.VERSION_CODES.S)
-    @SuppressLint("MissingPermission")
     private fun initUI() {
 
         if (!checkPermissions()) {
@@ -115,11 +110,17 @@ class MainActivity : AppCompatActivity() {
         toggleBtn(false)
 
         binding.startScan.setOnClickListener {
-            checkBluetoothState()
+            if (checkBluetoothState()) {
+                startScanning()
+                isScanning = true
+            } else {
+                requestBluetoothEnable()
+            }
         }
 
         binding.stopScan.setOnClickListener {
             mainActivityViewModel.stopScan()
+            isScanning = true
             toggleBtn(false)
         }
 
@@ -127,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun checkPermissions(): Boolean {
+    fun checkPermissions(): Boolean {
         permissionsToGrantList.clear()
         for (permission in requiredPermissions) {
             if (ContextCompat.checkSelfPermission(
@@ -156,20 +157,19 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @SuppressLint("MissingPermission")
-    private fun checkBluetoothState() {
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothAdapter = bluetoothManager.adapter
-        if (!bluetoothAdapter.isEnabled) {
-            val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            bluetoothActivityResultLauncher.launch(enableIntent)
-        } else {
-            startScanning()
-        }
+    fun checkBluetoothState(): Boolean {
+        return mainActivityViewModel.isBluetoothEnable()
     }
+
+    fun requestBluetoothEnable() {
+        val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        bluetoothActivityResultLauncher.launch(enableIntent)
+    }
+
 
     private fun startScanning() {
         mainActivityViewModel.startScan()
+        isScanning = true
         toggleBtn(true)
     }
 
