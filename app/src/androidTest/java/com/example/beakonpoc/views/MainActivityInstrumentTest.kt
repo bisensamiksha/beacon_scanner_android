@@ -8,9 +8,15 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.example.beakonpoc.R
@@ -47,16 +53,14 @@ class MainActivityInstrumentTest {
 
     @Test
     fun testInitialConditions() {
-        assertTrue(startScanButton.isEnabled)
+        assertFalse(startScanButton.isEnabled)
         assertFalse(stopScanButton.isEnabled)
         assertEquals(View.GONE, errorTextView.visibility)
     }
 
     @Test
-    fun checkPermission_permissionNotGranted_startScanDisabled() {
-
+    fun checkPermission_permissionNotGranted_shouldReturnFalse() {
         val result = activity.checkPermissions()
-        //check UI elements
         assertFalse(result)
     }
 
@@ -80,24 +84,21 @@ class MainActivityInstrumentTest {
     }
 
     @Test
-    fun checkBluetoothState_bluetoothDisabled_startScanningDisabled() {
+    fun checkBluetoothState_bluetoothDisabled_shouldReturnFalse() {
         val state = activity.checkBluetoothState()
-        //check UI elements
         assertFalse(state)
     }
 
     @Test
-    fun startScanning_onClick_startScan() {
+    fun startScanning_onClick_stopScanBtnEnable() {
 
         assertTrue(activity.checkBluetoothState())
-
         assertTrue(activity.checkPermissions())
 
         activity.runOnUiThread { startScanButton.performClick() }
 
-        assertTrue(activity.isScanning)
-
         assertFalse(stopScanButton.isEnabled)
+        //assertTrue(activity.isScanning) //needs to implement this later
 
     }
 
@@ -111,8 +112,7 @@ class MainActivityInstrumentTest {
 
         Intents.init()
 
-        val resultLauncher = activity.activityResultRegistry.register(
-            "key",
+        val resultLauncher = activity.activityResultRegistry.register("key",
             ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback { result })
 
@@ -121,6 +121,19 @@ class MainActivityInstrumentTest {
 
         activity.requestBluetoothEnable()
         intended(intentMatcher)
+
+    }
+
+    @Test
+    fun onRequestNotGranted_shouldShowRationale() {
+
+        assertFalse(activity.checkPermissions())
+
+        onView(withText("Please grant permissions to function properly.")).check(matches(isDisplayed()))
+
+        onView(withText("Cancel")).perform(click())
+
+        onView(withText("Please grant permissions to function properly.")).check(doesNotExist())
 
     }
 

@@ -25,7 +25,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var isScanning = true
+    var isScanning = false
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
 
@@ -38,11 +38,13 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 if (Utils.isBLESupported(this)) {
                     startScanning()
-                } else Toast.makeText(
-                    applicationContext,
-                    "This device does not support BLE.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                } else {
+                    Toast.makeText(
+                        applicationContext,
+                        "This device does not support BLE.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             } else {
                 Toast.makeText(
                     applicationContext,
@@ -75,8 +77,7 @@ class MainActivity : AppCompatActivity() {
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
 
                 if (!checkPermissions()) {
-                    binding.startScan.isEnabled = false
-                    binding.startScan.alpha = 0.7f
+                    enableStartScanBtn(false)
                     binding.errorText.visibility = View.VISIBLE
                     val shouldShowRationale = permissionsToGrantList.any {
                         shouldShowRequestPermissionRationale(it)
@@ -85,8 +86,7 @@ class MainActivity : AppCompatActivity() {
                         showRationale(permissionsToGrantList)
                     }
                 } else {
-                    binding.startScan.isEnabled = true
-                    binding.startScan.alpha = 1f
+                    enableStartScanBtn(true)
                     binding.errorText.visibility = View.GONE
                     Toast.makeText(applicationContext, "All permissions granted", Toast.LENGTH_LONG)
                         .show()
@@ -102,26 +102,26 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun initUI() {
+        isScanning = false
+        enableStopScanBtn(false)
+        enableStartScanBtn(false)
 
         if (!checkPermissions()) {
             requestBLEPermissions()
+        }else{
+            enableStartScanBtn(true)
         }
-
-        toggleBtn(false)
 
         binding.startScan.setOnClickListener {
             if (checkBluetoothState()) {
                 startScanning()
-                isScanning = true
             } else {
                 requestBluetoothEnable()
             }
         }
 
         binding.stopScan.setOnClickListener {
-            mainActivityViewModel.stopScan()
-            isScanning = true
-            toggleBtn(false)
+            stopScanning()
         }
 
     }
@@ -170,20 +170,41 @@ class MainActivity : AppCompatActivity() {
     private fun startScanning() {
         mainActivityViewModel.startScan()
         isScanning = true
-        toggleBtn(true)
+        toggleBtn()
     }
 
-    private fun toggleBtn(isScanning: Boolean) {
-        if (isScanning) {
+    private fun stopScanning(){
+        mainActivityViewModel.stopScan()
+        isScanning = false
+        toggleBtn()
+    }
+    private fun enableStartScanBtn(isEnable: Boolean){
+        if(isEnable){
+            binding.startScan.isEnabled = true
+            binding.startScan.alpha = 1f
+        }else{
             binding.startScan.isEnabled = false
             binding.startScan.alpha = 0.7f
-            binding.stopScan.alpha = 1f
+        }
+    }
+
+    private fun enableStopScanBtn(isEnable: Boolean){
+        if(isEnable){
             binding.stopScan.isEnabled = true
-        } else {
-            binding.startScan.isEnabled = true
-            binding.stopScan.alpha = 0.7f
-            binding.startScan.alpha = 1f
+            binding.stopScan.alpha = 1f
+        }else{
             binding.stopScan.isEnabled = false
+            binding.stopScan.alpha = 0.7f
+        }
+    }
+
+    private fun toggleBtn() {
+        if (isScanning) {
+            enableStartScanBtn(false)
+            enableStopScanBtn(true)
+        } else {
+            enableStartScanBtn(true)
+            enableStopScanBtn(false)
         }
     }
 
