@@ -30,35 +30,30 @@ class BLEManagerTest {
     }
 
     @Test
-    fun stoppedScanning_isScanningFalse() {
+    fun test_stopScanning() {
         bleManager.stopScan()
         val result = bleManager.isScanning()
         assertThat(result).isFalse()
     }
 
     @Test
-    fun startedScanning_isScanningTrue() {
+    fun test_startScanning() {
         bleManager.startScan()
         val result = bleManager.isScanning()
         assertThat(result).isTrue()
     }
 
     @Test
-    fun processPayload_invalidScanResult_shouldReturnNull() {
-
+    fun test_processPayload_withInvalidScanResult() {
         val scanResult = ScanResult(null, 0, 0, 0, 0, 0, -50, 0, null, 0)
-
         bleManager.processPayload(scanResult)
 
         val result = bleManager.updateBeacon().getOrAwaitValue()
-
         assertThat(result).isNull()
-
-
     }
 
     @Test
-    fun processPayload_validScanResult_updateLiveData() {
+    fun test_processPayload_withValidScanResult() {
         val device = mockkClass(BluetoothDevice::class)
         every { device["getAddress"]() } returns "BE:FF:FA:00:22:33"
         every { device["getName"]() } returns null
@@ -93,14 +88,10 @@ class BLEManagerTest {
             /* timestampNanos = */ 1894004710612013
         )
 
-
         bleManager.processPayload(scanResult)
 
         val result = bleManager.updateBeacon().getOrAwaitValue()
-
         assertThat(result).isNotNull()
         assertThat(result?.rssi).isEqualTo("-50")
-
     }
-
 }

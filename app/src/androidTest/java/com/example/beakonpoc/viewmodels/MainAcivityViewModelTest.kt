@@ -26,10 +26,8 @@ class MainActivityViewModelTest {
         viewModel = MainActivityViewModel(context as Application)
     }
 
-
     @Test
-    fun startScan_shouldStartScan() {
-
+    fun test_startScan() {
         assertFalse(viewModel.bleManager.isScanning())
         viewModel.startScan()
 
@@ -37,15 +35,12 @@ class MainActivityViewModelTest {
         viewModel.stopScan()
     }
 
-
     @Test
-    fun stopScan_shouldStopScan() {
+    fun test_stopScan() {
         viewModel.startScan()
         assertTrue(viewModel.bleManager.isScanning())
 
         viewModel.stopScan()
         assertFalse(viewModel.bleManager.isScanning())
     }
-
-
 }

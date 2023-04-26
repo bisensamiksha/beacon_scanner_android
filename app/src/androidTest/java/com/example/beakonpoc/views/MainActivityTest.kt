@@ -27,24 +27,20 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MainActivityInstrumentTest {
-
+class MainActivityTest {
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
-
 
     private lateinit var activity: MainActivity
     private lateinit var startScanButton: Button
     private lateinit var errorTextView: TextView
     private lateinit var stopScanButton: Button
 
-
     //Following tests require real device
     @Before
     fun setUp() {
         activity = activityRule.activity
-
         startScanButton = activity.findViewById(R.id.startScan)
         errorTextView = activity.findViewById(R.id.errorText)
         stopScanButton = activity.findViewById(R.id.stopScan)
@@ -52,31 +48,28 @@ class MainActivityInstrumentTest {
     }
 
     @Test
-    fun testInitialConditions() {
+    fun test_initialConditions() {
         assertFalse(startScanButton.isEnabled)
         assertFalse(stopScanButton.isEnabled)
         assertEquals(View.GONE, errorTextView.visibility)
     }
 
     @Test
-    fun checkPermission_permissionNotGranted_shouldReturnFalse() {
+    fun test_checkPermission_withPermissionsNotGranted() {
         val result = activity.checkPermissions()
         assertFalse(result)
     }
 
-
     @Test
-    fun checkPermission_permissionGranted_startScanEnabled() {
-
+    fun test_checkPermission_withPermissionsGranted() {
         val result = activity.checkPermissions()
-
         assertTrue(result)
         assertTrue(startScanButton.isEnabled)
         assertEquals(View.GONE, errorTextView.visibility)
     }
 
     @Test
-    fun checkBluetoothState_bluetoothEnabled_startScanningEnable() {
+    fun test_checkBluetoothState_withBluetoothEnabled() {
         val state = activity.checkBluetoothState()
         assertTrue(state)
         assertTrue(startScanButton.isEnabled)
@@ -84,14 +77,13 @@ class MainActivityInstrumentTest {
     }
 
     @Test
-    fun checkBluetoothState_bluetoothDisabled_shouldReturnFalse() {
+    fun test_checkBluetoothState_withBluetoothDisabled() {
         val state = activity.checkBluetoothState()
         assertFalse(state)
     }
 
     @Test
-    fun startScanning_onClick_stopScanBtnEnable() {
-
+    fun test_onClickOfStartScan() {
         assertTrue(activity.checkBluetoothState())
         assertTrue(activity.checkPermissions())
 
@@ -99,12 +91,10 @@ class MainActivityInstrumentTest {
 
         assertFalse(stopScanButton.isEnabled)
         //assertTrue(activity.isScanning) //needs to implement this later
-
     }
 
-
     @Test
-    fun bluetoothIsDisabled_startsEnableDialogIntent() {
+    fun test_requestBluetoothEnable() {
         assertFalse(activity.checkBluetoothState())
 
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
@@ -118,14 +108,12 @@ class MainActivityInstrumentTest {
 
         activity.bluetoothActivityResultLauncher = resultLauncher
 
-
         activity.requestBluetoothEnable()
         intended(intentMatcher)
-
     }
 
     @Test
-    fun onRequestNotGranted_shouldShowRationale() {
+    fun test_showRationale() {
 
         assertFalse(activity.checkPermissions())
 

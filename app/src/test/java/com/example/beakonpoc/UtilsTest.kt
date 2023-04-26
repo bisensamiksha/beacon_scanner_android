@@ -10,9 +10,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class UtilsTest {
-
     @Test
-    fun testHexToByte_validHexString() {
+    fun test_hexToByte_withValidHexString() {
         val hexString = "0123456789abcdef"
         val expected = byteArrayOf(
             0x01,
@@ -29,7 +28,7 @@ class UtilsTest {
     }
 
     @Test
-    fun testHexToByte_invalidHexString() {
+    fun test_hexToByte_withInvalidHexString() {
         val hexString = "0123456789abcde"
         val expected = byteArrayOf(
             0x01,
