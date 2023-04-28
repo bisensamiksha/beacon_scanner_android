@@ -16,8 +16,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beakonpoc.R
 import com.example.beakonpoc.databinding.ActivityMainBinding
+import com.example.beakonpoc.models.BeaconDataModel
 import com.example.beakonpoc.utils.Utils
 import com.example.beakonpoc.viewmodels.MainActivityViewModel
 import java.util.*
@@ -28,7 +30,8 @@ class MainActivity : AppCompatActivity() {
     var isScanning = false
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var binding: ActivityMainBinding
-
+    private lateinit var beaconListAdapter: BeaconListAdapter
+    private lateinit var beaconList: MutableList<BeaconDataModel>
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var requiredPermissions = mutableListOf<String>()
     private var permissionsToGrantList = mutableListOf<String>()
@@ -102,6 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun initUI() {
+        beaconList = ArrayList()
         isScanning = false
         enableStopScanBtn(false)
         enableStartScanBtn(false)
@@ -111,6 +115,8 @@ class MainActivity : AppCompatActivity() {
         }else{
             enableStartScanBtn(true)
         }
+
+
 
         binding.startScan.setOnClickListener {
             if (checkBluetoothState()) {
@@ -123,6 +129,20 @@ class MainActivity : AppCompatActivity() {
         binding.stopScan.setOnClickListener {
             stopScanning()
         }
+
+
+        beaconListAdapter = BeaconListAdapter()
+        binding.beaconRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.beaconRecyclerView.adapter = beaconListAdapter
+        //beaconList.add(BeaconDataModel(BeaconType.iBeacon, "1234","1","1","-50"))
+        beaconListAdapter.setData(beaconList)
+
+        mainActivityViewModel.beaconLiveData.observe(this, androidx.lifecycle.Observer {
+                if (it != null) {
+                    //beaconList.add(BeaconDataModel(BeaconType.iBeacon, "1234","1","1","-50"))
+                    beaconListAdapter.setData(it)
+                }
+        })
 
     }
 
@@ -227,4 +247,9 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
+
+    /*override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }*/
 }

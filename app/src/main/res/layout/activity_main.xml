@@ -16,120 +16,34 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/beaconTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/ibeacon_scanner"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/beaconRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@+id/beaconTitle"
+            android:layout_above="@+id/buttonLayout"
+            tools:listitem="@layout/item_beacon"
+            android:background="@color/white"/>
 
         <LinearLayout
-            android:id="@+id/uuidLayout"
+            android:id="@+id/buttonLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/majorLayout"
-            android:layout_centerHorizontal="true">
-
-            <TextView
-                android:id="@+id/uuidTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/uuid"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/uuidTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@{mainViewModel.beaconLiveData.uuid}"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/majorLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/minorLayout"
-            android:layout_centerHorizontal="true">
-
-            <TextView
-                android:id="@+id/majorTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/major"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/majorTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@{mainViewModel.beaconLiveData.major}"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/minorLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/distanceLayout"
-            android:layout_centerHorizontal="true">
-
-            <TextView
-                android:id="@+id/minorTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/minor"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/minorTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@{mainViewModel.beaconLiveData.minor}"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/distanceLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
-
-            <TextView
-                android:id="@+id/distanceTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/rssi_value"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@{mainViewModel.beaconLiveData.rssi}"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/distanceLayout"
-            android:layout_centerInParent="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="40dp"
             android:layout_marginTop="20dp">
 
             <Button

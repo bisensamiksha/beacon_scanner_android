@@ -4,11 +4,15 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import android.os.ParcelUuid
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.example.beakonpoc.utils.Utils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.*
+import kotlin.collections.ArrayList
 
 class BLEManager(
     private val context: Context
@@ -18,7 +22,7 @@ class BLEManager(
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val bluetoothAdapter = bluetoothManager.adapter
     private var bluetoothScanner = bluetoothAdapter.bluetoothLeScanner
-    private var iBeaconData = MutableLiveData<BeaconDataModel?>()
+    private var iBeaconData = MutableLiveData<MutableList<BeaconDataModel>?>()
 
     private var isScanningStarted = false
 
@@ -48,7 +52,7 @@ class BLEManager(
     }
 
     init {
-        iBeaconData.postValue(null)
+        iBeaconData.postValue(ArrayList())
     }
 
     fun startScan() {
@@ -67,11 +71,12 @@ class BLEManager(
         isScanningStarted = false
     }
 
-    fun updateBeacon(): MutableLiveData<BeaconDataModel?> {
+    fun updateBeacon(): MutableLiveData<MutableList<BeaconDataModel>?> {
         return iBeaconData
     }
 
     fun processPayload(scanResult: ScanResult) {
+        //For iBeacon
         val payload = scanResult.scanRecord?.manufacturerSpecificData?.get(76)
         if (payload != null && payload.size >= 23) {
             val uuidBytes =
@@ -88,22 +93,81 @@ class BLEManager(
                 "UUID: $uuidBytes, Major: $major, Minor: $minor, TxPower: $txPowerBeacon"
             )
 
-            iBeaconData.postValue(
-                BeaconDataModel(
-                    uuidBytes.toString(),
-                    major.toString(),
-                    minor.toString(),
-                    rssi.toString()
-                )
+            var hasBeacon = false
+            var currentList = iBeaconData.value
+            var newBeacon = BeaconDataModel(
+                BeaconType.iBeacon,
+                uuidBytes.toString(),
+                major.toString(),
+                minor.toString(),
+                rssi.toString()
             )
 
-            //for Eddystone
-            //val manufactuerIdGoogle = scanResult.scanRecord?.manufacturerSpecificData.get(0x0118)
+            for (i in currentList?.indices!!) {
+                if (currentList[i].uuid == newBeacon.uuid) {
+                    currentList[i] = newBeacon
+                    hasBeacon = true
+                    break
+                }
+            }
 
+            if (!hasBeacon) {
+                currentList.add(newBeacon)
+            }
+            iBeaconData.postValue(currentList)
+
+        }
+
+        //for Eddystone
+        val serviceUuidEddystone = scanResult.scanRecord?.serviceUuids
+        val eddystoneServiceID = ParcelUuid.fromString("0000FEAA-0000-1000-8000-00805F9B34FB")
+
+        if (serviceUuidEddystone != null && serviceUuidEddystone.contains(eddystoneServiceID)) {
+            val eddystoneData = scanResult.scanRecord?.getServiceData(eddystoneServiceID)
+            if (eddystoneData != null) {
+                val eddystoneUUID =
+                    Utils.bytesToHex(Arrays.copyOfRange(eddystoneData, 2, 18))
+                val namespace = String(eddystoneUUID.toCharArray().sliceArray(0..19))
+                val instance = String(
+                    eddystoneUUID.toCharArray()
+                        .sliceArray(20 until eddystoneUUID.toCharArray().size)
+                )
+                val rssi = scanResult.rssi
+
+                Log.d(
+                    "BLE Logs",
+                    "Eddystone found eddyStoneUUID:$eddystoneUUID, Namespace: $namespace, Instance: $instance"
+                )
+                var hasBeacon = false
+                var currentList = iBeaconData.value
+                var newBeacon = BeaconDataModel(
+                    BeaconType.eddyStone,
+                    eddystoneUUID,
+                    null,
+                    null,
+                    rssi.toString(),
+                    namespace,
+                    instance
+                )
+
+                for (i in currentList?.indices!!) {
+                    if (currentList[i].uuid == newBeacon.uuid) {
+                        currentList[i] = newBeacon
+                        hasBeacon = true
+                        break
+                    }
+                }
+
+                if (!hasBeacon) {
+                    currentList.add(newBeacon)
+                }
+                iBeaconData.postValue(currentList)
+            }
         }
     }
 
     fun isScanning(): Boolean {
         return isScanningStarted
     }
+
 }
