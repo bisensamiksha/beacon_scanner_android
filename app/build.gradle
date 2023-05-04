@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
 }
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.dagger.hilt.android'
 
 android {
     namespace 'com.example.beakonpoc'
@@ -46,11 +48,14 @@ android {
         }
         packagingOptions {
             jniLibs {
-                // https://github.com/mockk/mockk/issues/297#issuecomment-901924678
                 useLegacyPackaging = true
             }
         }
     }
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 dependencies {
@@ -59,6 +64,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.fragment:fragment-ktx:1.5.7"
 
     // Lifecycle components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
@@ -98,6 +104,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.5.1"
     androidTestImplementation 'androidx.activity:activity-ktx:1.7.1'
 
-
+    // Hilt dependencies
+    implementation "com.google.dagger:hilt-android:2.46"
+    kapt "com.google.dagger:hilt-android-compiler:2.46"
 }
-

@@ -12,9 +12,10 @@ import com.example.beakonpoc.utils.Utils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class BLEManager(
+class BLEManager @Inject constructor(
     private val context: Context
 ) : BluetoothAdapterWrapper {
 
@@ -55,7 +56,7 @@ class BLEManager(
         iBeaconData.postValue(ArrayList())
     }
 
-    fun startScan() {
+    override fun startScan() {
         if (bluetoothScanner == null) {
             bluetoothScanner = bluetoothManager.adapter.bluetoothLeScanner
             bluetoothScanner.startScan(callback)
@@ -64,14 +65,14 @@ class BLEManager(
     }
 
 
-    fun stopScan() {
+    override fun stopScan() {
         if (isEnable()) {
             bluetoothScanner?.stopScan(callback)
         }
         isScanningStarted = false
     }
 
-    fun updateBeacon(): MutableLiveData<MutableList<BeaconDataModel>?> {
+    override fun updateBeacon(): MutableLiveData<MutableList<BeaconDataModel>?> {
         return iBeaconData
     }
 

@@ -10,31 +10,33 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beakonpoc.R
 import com.example.beakonpoc.databinding.ActivityMainBinding
 import com.example.beakonpoc.models.BeaconDataModel
 import com.example.beakonpoc.utils.Utils
 import com.example.beakonpoc.viewmodels.MainActivityViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    var isScanning = false
-    private lateinit var mainActivityViewModel: MainActivityViewModel
+    private val mainActivityViewModel: MainActivityViewModel by viewModels()
+    @Inject lateinit var beaconListAdapter: BeaconListAdapter
     private lateinit var binding: ActivityMainBinding
-    private lateinit var beaconListAdapter: BeaconListAdapter
     private lateinit var beaconList: MutableList<BeaconDataModel>
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var requiredPermissions = mutableListOf<String>()
     private var permissionsToGrantList = mutableListOf<String>()
+    var isScanning = false
 
     var bluetoothActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -62,8 +64,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.mainViewModel = mainActivityViewModel
@@ -131,15 +131,12 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        beaconListAdapter = BeaconListAdapter()
         binding.beaconRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.beaconRecyclerView.adapter = beaconListAdapter
-        //beaconList.add(BeaconDataModel(BeaconType.iBeacon, "1234","1","1","-50"))
         beaconListAdapter.setData(beaconList)
 
         mainActivityViewModel.beaconLiveData.observe(this, androidx.lifecycle.Observer {
                 if (it != null) {
-                    //beaconList.add(BeaconDataModel(BeaconType.iBeacon, "1234","1","1","-50"))
                     beaconListAdapter.setData(it)
                 }
         })
@@ -248,8 +245,4 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    /*override fun onDestroy() {
-        super.onDestroy()
-        binding = null
-    }*/
 }

@@ -9,8 +9,9 @@ import com.example.beakonpoc.databinding.ItemBeaconBinding
 import com.example.beakonpoc.models.BeaconDataModel
 import com.example.beakonpoc.models.BeaconType
 import com.example.beakonpoc.utils.BeaconDiffUtil
+import javax.inject.Inject
 
-class BeaconListAdapter : RecyclerView.Adapter<BeaconListAdapter.BeaconViewHolder>() {
+class BeaconListAdapter @Inject constructor() : RecyclerView.Adapter<BeaconListAdapter.BeaconViewHolder>() {
 
     private var beaconList = emptyList<BeaconDataModel>()
     inner class BeaconViewHolder(val binding: ItemBeaconBinding) : RecyclerView.ViewHolder(binding.root)
