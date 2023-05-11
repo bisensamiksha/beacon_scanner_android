@@ -11,5 +11,5 @@ data class BeaconDataModel(
 )
 
 enum class BeaconType{
-    iBeacon, eddyStone
+    IBEACON, EDDYSTONE
 }

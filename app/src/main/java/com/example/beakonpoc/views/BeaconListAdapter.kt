@@ -29,11 +29,12 @@ class BeaconListAdapter @Inject constructor() : RecyclerView.Adapter<BeaconListA
 
         with(holder){
             with(beaconList[position]){
-                if(this.type == BeaconType.iBeacon){
+                if(this.type == BeaconType.IBEACON){
                     binding.uuidTv.text = this.uuid
                     binding.majorTv.text = this.major
                     binding.minorTv.text = this.minor
                     binding.distance.text = this.rssi
+                    binding.bluetoothIcon.setImageResource(R.drawable.ibeacon)
                 }else{
                     binding.uuidTv.text = this.uuid
                     binding.majorTag.setText(R.string.namespace)
@@ -41,6 +42,7 @@ class BeaconListAdapter @Inject constructor() : RecyclerView.Adapter<BeaconListA
                     binding.majorTv.text = this.namespace
                     binding.minorTv.text = this.instance
                     binding.distance.text = this.rssi
+                    binding.bluetoothIcon.setImageResource(R.drawable.eddystone)
                 }
             }
         }

@@ -4,26 +4,37 @@ import android.app.Application
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.beakonpoc.di.TestBLEManager
+import com.example.beakonpoc.models.BLEManager
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import javax.inject.Inject
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class MainActivityViewModelTest {
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: MainActivityViewModel
 
+    @Inject
+    @TestBLEManager
+    lateinit var bleManager: BLEManager
+
     @Before
     fun setup() {
+        hiltRule.inject()
         val context = ApplicationProvider.getApplicationContext<Context>()
-        viewModel = MainActivityViewModel(context as Application)
+        viewModel = MainActivityViewModel(bleManager,context as Application)
     }
 
     @Test

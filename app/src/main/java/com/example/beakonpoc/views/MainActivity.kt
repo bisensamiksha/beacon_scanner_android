@@ -4,14 +4,12 @@ import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -23,7 +21,6 @@ import com.example.beakonpoc.models.BeaconDataModel
 import com.example.beakonpoc.utils.Utils
 import com.example.beakonpoc.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-    @RequiresApi(Build.VERSION_CODES.S)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -103,7 +100,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.S)
+
     private fun initUI() {
         beaconList = ArrayList()
         isScanning = false
@@ -144,7 +141,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.S)
     fun checkPermissions(): Boolean {
         permissionsToGrantList.clear()
         for (permission in requiredPermissions) {

@@ -15,11 +15,12 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.example.beakonpoc.R
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.TestCase.*
 import org.junit.Before
 import org.junit.Rule
@@ -27,7 +28,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class MainActivityTest {
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
@@ -48,10 +53,10 @@ class MainActivityTest {
     }
 
     @Test
-    fun test_initialConditions() {
-        assertFalse(startScanButton.isEnabled)
-        assertFalse(stopScanButton.isEnabled)
-        assertEquals(View.GONE, errorTextView.visibility)
+    fun test_isViewDisplayed(){
+        onView(withId(R.id.beaconRecyclerView)).check(matches(isDisplayed()))
+        onView(withId(R.id.stopScan)).check(matches(isDisplayed()))
+        onView(withId(R.id.startScan)).check(matches(isDisplayed()))
     }
 
     @Test

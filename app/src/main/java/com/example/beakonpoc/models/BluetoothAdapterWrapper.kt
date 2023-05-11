@@ -8,4 +8,5 @@ interface BluetoothAdapterWrapper {
     fun updateBeacon(): MutableLiveData<MutableList<BeaconDataModel>?>
     fun stopScan()
     fun startScan()
+    fun isScanning(): Boolean
 }

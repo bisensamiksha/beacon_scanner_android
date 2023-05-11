@@ -1,6 +1,5 @@
 package com.example.beakonpoc.utils
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager

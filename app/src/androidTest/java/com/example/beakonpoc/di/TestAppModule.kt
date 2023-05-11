@@ -10,14 +10,16 @@ import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class AppBLEManager
+annotation class TestBLEManager
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object TestAppModule {
+
     @Provides
-    @AppBLEManager
+    @TestBLEManager
     fun provideBLEManager(application: Application): BLEManager {
         return BLEManager(application)
     }
+
 }

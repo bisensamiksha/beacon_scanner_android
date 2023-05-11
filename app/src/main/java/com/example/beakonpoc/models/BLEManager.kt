@@ -9,11 +9,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.beakonpoc.utils.Utils
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class BLEManager @Inject constructor(
     private val context: Context
@@ -80,8 +77,11 @@ class BLEManager @Inject constructor(
         //For iBeacon
         val payload = scanResult.scanRecord?.manufacturerSpecificData?.get(76)
         if (payload != null && payload.size >= 23) {
-            val uuidBytes =
-                ByteBuffer.wrap(payload, 2, 18).order(ByteOrder.LITTLE_ENDIAN).long
+
+            val uuidBytes = payload.slice(2..17).toByteArray()
+            val uuidString = uuidBytes.joinToString(separator = "") { byte ->
+                String.format("%02X", byte)
+            }
             val major =
                 ((payload[18].toInt() and 0xff) shl 8) or (payload[19].toInt() and 0xff)
             val minor =
@@ -91,14 +91,14 @@ class BLEManager @Inject constructor(
 
             Log.d(
                 "BLE Logs",
-                "UUID: $uuidBytes, Major: $major, Minor: $minor, TxPower: $txPowerBeacon"
+                "UUID: $uuidString, Major: $major, Minor: $minor, TxPower: $txPowerBeacon"
             )
 
             var hasBeacon = false
             var currentList = iBeaconData.value
             var newBeacon = BeaconDataModel(
-                BeaconType.iBeacon,
-                uuidBytes.toString(),
+                BeaconType.IBEACON,
+                uuidString,
                 major.toString(),
                 minor.toString(),
                 rssi.toString()
@@ -142,7 +142,7 @@ class BLEManager @Inject constructor(
                 var hasBeacon = false
                 var currentList = iBeaconData.value
                 var newBeacon = BeaconDataModel(
-                    BeaconType.eddyStone,
+                    BeaconType.EDDYSTONE,
                     eddystoneUUID,
                     null,
                     null,
@@ -167,7 +167,7 @@ class BLEManager @Inject constructor(
         }
     }
 
-    fun isScanning(): Boolean {
+    override fun isScanning(): Boolean {
         return isScanningStarted
     }
 

@@ -12,8 +12,10 @@
         android:id="@+id/bluetoothIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/bluetooth_icon"
+        android:src="@drawable/ibeacon"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"
         android:contentDescription="@string/bluetooth_icon"
         />
 

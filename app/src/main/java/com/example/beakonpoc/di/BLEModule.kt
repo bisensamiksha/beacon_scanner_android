@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 abstract class BLEModule {
 
     @Binds
-    abstract fun bindBLEManager(impl: BLEManager): BluetoothAdapterWrapper
+    abstract fun bindBLEManager(@AppBLEManager impl: BLEManager): BluetoothAdapterWrapper
 }
