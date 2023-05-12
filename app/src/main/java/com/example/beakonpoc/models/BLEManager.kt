@@ -8,6 +8,8 @@ import android.os.ParcelUuid
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.example.beakonpoc.R
+import com.example.beakonpoc.utils.Constants
 import com.example.beakonpoc.utils.Utils
 import java.util.*
 import javax.inject.Inject
@@ -37,7 +39,7 @@ class BLEManager @Inject constructor(
         }
 
         override fun onScanFailed(errorCode: Int) {
-            Toast.makeText(context, "Scanning Failed", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.scanning_failed), Toast.LENGTH_LONG).show()
             Log.d("BLE Logs", "Failed $errorCode")
             isScanningStarted = false
             super.onScanFailed(errorCode)
@@ -95,8 +97,8 @@ class BLEManager @Inject constructor(
             )
 
             var hasBeacon = false
-            var currentList = iBeaconData.value
-            var newBeacon = BeaconDataModel(
+            val currentList = iBeaconData.value
+            val newBeacon = BeaconDataModel(
                 BeaconType.IBEACON,
                 uuidString,
                 major.toString(),
@@ -121,7 +123,7 @@ class BLEManager @Inject constructor(
 
         //for Eddystone
         val serviceUuidEddystone = scanResult.scanRecord?.serviceUuids
-        val eddystoneServiceID = ParcelUuid.fromString("0000FEAA-0000-1000-8000-00805F9B34FB")
+        val eddystoneServiceID = ParcelUuid.fromString(Constants.EDDYSTONE_SERVICE_UUID)
 
         if (serviceUuidEddystone != null && serviceUuidEddystone.contains(eddystoneServiceID)) {
             val eddystoneData = scanResult.scanRecord?.getServiceData(eddystoneServiceID)
@@ -140,8 +142,8 @@ class BLEManager @Inject constructor(
                     "Eddystone found eddyStoneUUID:$eddystoneUUID, Namespace: $namespace, Instance: $instance"
                 )
                 var hasBeacon = false
-                var currentList = iBeaconData.value
-                var newBeacon = BeaconDataModel(
+                val currentList = iBeaconData.value
+                val newBeacon = BeaconDataModel(
                     BeaconType.EDDYSTONE,
                     eddystoneUUID,
                     null,

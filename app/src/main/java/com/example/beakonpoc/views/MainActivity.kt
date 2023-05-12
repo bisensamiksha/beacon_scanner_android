@@ -43,24 +43,23 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(
                         applicationContext,
-                        "This device does not support BLE.",
+                        getString(R.string.ble_not_supported),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
                 Toast.makeText(
                     applicationContext,
-                    "Please switch Bluetooth ON to use the app",
+                    getString(R.string.switch_bluetooth_on),
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.mainViewModel = mainActivityViewModel
@@ -75,7 +74,6 @@ class MainActivity : AppCompatActivity() {
 
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-
                 if (!checkPermissions()) {
                     enableStartScanBtn(false)
                     binding.errorText.visibility = View.VISIBLE
@@ -88,18 +86,12 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     enableStartScanBtn(true)
                     binding.errorText.visibility = View.GONE
-                    Toast.makeText(applicationContext, "All permissions granted", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, getString(R.string.permissions_granted), Toast.LENGTH_LONG)
                         .show()
                 }
-
             }
-
-
         initUI()
-
     }
-
-
 
     private fun initUI() {
         beaconList = ArrayList()
@@ -113,8 +105,6 @@ class MainActivity : AppCompatActivity() {
             enableStartScanBtn(true)
         }
 
-
-
         binding.startScan.setOnClickListener {
             if (checkBluetoothState()) {
                 startScanning()
@@ -127,7 +117,6 @@ class MainActivity : AppCompatActivity() {
             stopScanning()
         }
 
-
         binding.beaconRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.beaconRecyclerView.adapter = beaconListAdapter
         beaconListAdapter.setData(beaconList)
@@ -139,7 +128,6 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
-
 
     fun checkPermissions(): Boolean {
         permissionsToGrantList.clear()
@@ -169,7 +157,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     fun checkBluetoothState(): Boolean {
         return mainActivityViewModel.isBluetoothEnable()
     }
@@ -178,7 +165,6 @@ class MainActivity : AppCompatActivity() {
         val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
         bluetoothActivityResultLauncher.launch(enableIntent)
     }
-
 
     private fun startScanning() {
         mainActivityViewModel.startScan()
@@ -191,6 +177,7 @@ class MainActivity : AppCompatActivity() {
         isScanning = false
         toggleBtn()
     }
+
     private fun enableStartScanBtn(isEnable: Boolean){
         if(isEnable){
             binding.startScan.isEnabled = true
@@ -221,18 +208,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun showRationale(permissionsToGrantList: MutableList<String>) {
         val dialog = AlertDialog.Builder(this)
-            .setMessage("Please grant permissions to function properly.")
-            .setTitle("Permission Required")
-            .setPositiveButton("OK") { _, _ ->
+            .setMessage(getString(R.string.request_permission_grant))
+            .setTitle(getString(R.string.permission_required))
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 permissionLauncher.launch(permissionsToGrantList.toTypedArray())
             }
-            .setNegativeButton("Cancel") { _, _ ->
+            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 Toast.makeText(
                     applicationContext,
-                    "Please grant permissions to continue using app",
+                    getString(R.string.grant_permission_message),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -240,5 +226,4 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
 }

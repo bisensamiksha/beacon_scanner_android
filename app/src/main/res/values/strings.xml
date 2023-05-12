@@ -3,12 +3,12 @@
     <string name="start_scan">Start Scan</string>
     <string name="stop_scan">Stop Scan</string>
     <string name="rssi_value">RSSI</string>
-    <string name="ibeacon_scanner">iBeacon Scanner</string>
-    <string name="uuid">UUID</string>
-    <string name="minor">Minor</string>
-    <string name="major">Major</string>
-    <string name="namespace">Namespace</string>
-    <string name="instance">Instance</string>
+    <string name="beacon_scanner">Beacon Scanner</string>
+    <string name="uuid">UUID:</string>
+    <string name="minor">Minor:</string>
+    <string name="major">Major:</string>
+    <string name="namespace">Namespace:</string>
+    <string name="instance">Instance:</string>
     <string name="permission_denied_title">Permissions required</string>
     <string name="permission_denied_message">Please grant permissions to use App functionalities.</string>
     <string name="ok">ok</string>
@@ -16,4 +16,11 @@
     <string name="permission_not_granted">You have not granted required permissions. Please go to settings and grant permissions to use the App.</string>
     <string name="enable_bluetooth">Enable Bluetooth</string>
     <string name="bluetooth_icon">Bluetooth Icon</string>
+    <string name="ble_not_supported">This device does not support BLE.</string>
+    <string name="switch_bluetooth_on">Please switch Bluetooth ON to use the app</string>
+    <string name="permissions_granted">All permissions granted</string>
+    <string name="request_permission_grant">Please grant permissions to function properly.</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="grant_permission_message">Please grant permissions to continue using app</string>
+    <string name="scanning_failed">Scanning Failed</string>
 </resources>

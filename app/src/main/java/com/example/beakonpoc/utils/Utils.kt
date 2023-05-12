@@ -16,23 +16,8 @@ object Utils {
         )
     }
 
-    fun calculateProximity(rssi: Int, txPower: Int): String {
-        val ratio = rssi.toDouble() / txPower.toDouble()
-        if (ratio < 1.0) {
-            return "Immediate"
-        }
-        val accuracy = 20 * Math.log10(ratio) + 20
-        return when {
-            accuracy < 0.5 -> "Immediate"
-            accuracy < 0 -> "Near"
-            else -> "Far"
-        }
-    }
-
     fun hexToByte(hexString: String): ByteArray {
-
         return hexString.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
-
     }
 
      fun bytesToHex(bytes: ByteArray): String {
