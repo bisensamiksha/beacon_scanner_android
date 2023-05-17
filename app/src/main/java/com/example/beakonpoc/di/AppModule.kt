@@ -2,6 +2,7 @@ package com.example.beakonpoc.di
 
 import android.app.Application
 import com.example.beakonpoc.models.BLEManager
+import com.example.beakonpoc.models.BeaconEmitter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,5 +20,10 @@ object AppModule {
     @AppBLEManager
     fun provideBLEManager(application: Application): BLEManager {
         return BLEManager(application)
+    }
+
+    @Provides
+    fun provideBeaconEmitter(application: Application):BeaconEmitter{
+        return BeaconEmitter(application)
     }
 }

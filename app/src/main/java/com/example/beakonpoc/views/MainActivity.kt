@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.beakonpoc.R
 import com.example.beakonpoc.databinding.ActivityMainBinding
 import com.example.beakonpoc.models.BeaconDataModel
+import com.example.beakonpoc.models.BeaconEmitter
 import com.example.beakonpoc.utils.Utils
 import com.example.beakonpoc.viewmodels.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +28,12 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
-    @Inject lateinit var beaconListAdapter: BeaconListAdapter
+
+    @Inject
+    lateinit var beaconListAdapter: BeaconListAdapter
+
+    @Inject
+    lateinit var beaconEmitter: BeaconEmitter
     private lateinit var binding: ActivityMainBinding
     private lateinit var beaconList: MutableList<BeaconDataModel>
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
@@ -69,13 +75,15 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.BLUETOOTH_CONNECT
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_ADVERTISE
         )
 
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
                 if (!checkPermissions()) {
                     enableStartScanBtn(false)
+                    enableStartEmitBtn(false)
                     binding.errorText.visibility = View.VISIBLE
                     val shouldShowRationale = permissionsToGrantList.any {
                         shouldShowRequestPermissionRationale(it)
@@ -85,8 +93,13 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     enableStartScanBtn(true)
+                    enableStartEmitBtn(true)
                     binding.errorText.visibility = View.GONE
-                    Toast.makeText(applicationContext, getString(R.string.permissions_granted), Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.permissions_granted),
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
             }
@@ -98,11 +111,14 @@ class MainActivity : AppCompatActivity() {
         isScanning = false
         enableStopScanBtn(false)
         enableStartScanBtn(false)
+        enableStopEmitBtn(false)
+        enableStartEmitBtn(false)
 
         if (!checkPermissions()) {
             requestBLEPermissions()
-        }else{
+        } else {
             enableStartScanBtn(true)
+            enableStartEmitBtn(true)
         }
 
         binding.startScan.setOnClickListener {
@@ -122,10 +138,26 @@ class MainActivity : AppCompatActivity() {
         beaconListAdapter.setData(beaconList)
 
         mainActivityViewModel.beaconLiveData.observe(this, androidx.lifecycle.Observer {
-                if (it != null) {
-                    beaconListAdapter.setData(it)
-                }
+            if (it != null) {
+                beaconListAdapter.setData(it)
+            }
         })
+
+        binding.startEmitter.setOnClickListener {
+            if (checkBluetoothState()) {
+                //beaconEmitter.startEddystone("0102030405060708090a","000000000002")
+                beaconEmitter.startIBeacon("2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6", 13, 15)
+                toggleEmitBtn()
+            } else {
+                requestBluetoothEnable()
+            }
+
+        }
+
+        binding.stopEmitter.setOnClickListener {
+            beaconEmitter.stopAdvertising()
+            toggleEmitBtn()
+        }
 
     }
 
@@ -172,27 +204,27 @@ class MainActivity : AppCompatActivity() {
         toggleBtn()
     }
 
-    private fun stopScanning(){
+    private fun stopScanning() {
         mainActivityViewModel.stopScan()
         isScanning = false
         toggleBtn()
     }
 
-    private fun enableStartScanBtn(isEnable: Boolean){
-        if(isEnable){
+    private fun enableStartScanBtn(isEnable: Boolean) {
+        if (isEnable) {
             binding.startScan.isEnabled = true
             binding.startScan.alpha = 1f
-        }else{
+        } else {
             binding.startScan.isEnabled = false
             binding.startScan.alpha = 0.7f
         }
     }
 
-    private fun enableStopScanBtn(isEnable: Boolean){
-        if(isEnable){
+    private fun enableStopScanBtn(isEnable: Boolean) {
+        if (isEnable) {
             binding.stopScan.isEnabled = true
             binding.stopScan.alpha = 1f
-        }else{
+        } else {
             binding.stopScan.isEnabled = false
             binding.stopScan.alpha = 0.7f
         }
@@ -205,6 +237,36 @@ class MainActivity : AppCompatActivity() {
         } else {
             enableStartScanBtn(true)
             enableStopScanBtn(false)
+        }
+    }
+
+    private fun toggleEmitBtn() {
+        if (binding.startEmitter.isEnabled) {
+            enableStartEmitBtn(false)
+            enableStopEmitBtn(true)
+        } else {
+            enableStartEmitBtn(true)
+            enableStopEmitBtn(false)
+        }
+    }
+
+    private fun enableStartEmitBtn(isEnable: Boolean) {
+        if (isEnable) {
+            binding.startEmitter.isEnabled = true
+            binding.startEmitter.alpha = 1f
+        } else {
+            binding.startEmitter.isEnabled = false
+            binding.startEmitter.alpha = 0.7f
+        }
+    }
+
+    private fun enableStopEmitBtn(isEnable: Boolean) {
+        if (isEnable) {
+            binding.stopEmitter.isEnabled = true
+            binding.stopEmitter.alpha = 1f
+        } else {
+            binding.stopEmitter.isEnabled = false
+            binding.stopEmitter.alpha = 0.7f
         }
     }
 

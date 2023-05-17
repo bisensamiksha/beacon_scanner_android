@@ -3,6 +3,7 @@ package com.example.beakonpoc.utils
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import com.example.beakonpoc.views.MainActivity
 
 object Utils {
@@ -30,4 +31,17 @@ object Utils {
         return String(hexChars)
     }
     private val hexArray = "0123456789ABCDEF".toCharArray()
+
+    fun hexStringToByteArray(data: String): ByteArray {
+        val length = data.length / 2
+        val byteArray = ByteArray(length)
+        for (i in 0 until length) {
+            val index = i * 2
+            val hex = data.substring(index, index + 2)
+            val byte = hex.toInt(16).toByte()
+            byteArray[i] = byte
+        }
+        Log.d("BLE Logs", "byteArray is  $byteArray")
+        return byteArray
+    }
 }

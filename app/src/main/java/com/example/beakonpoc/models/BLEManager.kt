@@ -77,8 +77,8 @@ class BLEManager @Inject constructor(
 
     fun processPayload(scanResult: ScanResult) {
         //For iBeacon
-        val payload = scanResult.scanRecord?.manufacturerSpecificData?.get(76)
-        if (payload != null && payload.size >= 23) {
+        val payload = scanResult.scanRecord?.manufacturerSpecificData?.get(Constants.IBEACON_MANUFACTURE_ID)
+        if (payload != null && payload.size >= 22) {
 
             val uuidBytes = payload.slice(2..17).toByteArray()
             val uuidString = uuidBytes.joinToString(separator = "") { byte ->
@@ -88,12 +88,11 @@ class BLEManager @Inject constructor(
                 ((payload[18].toInt() and 0xff) shl 8) or (payload[19].toInt() and 0xff)
             val minor =
                 ((payload[20].toInt() and 0xff) shl 8) or (payload[21].toInt() and 0xff)
-            val txPowerBeacon = payload[22].toInt()
             val rssi = scanResult.rssi
 
             Log.d(
                 "BLE Logs",
-                "UUID: $uuidString, Major: $major, Minor: $minor, TxPower: $txPowerBeacon"
+                "UUID: $uuidString, Major: $major, Minor: $minor"
             )
 
             var hasBeacon = false
