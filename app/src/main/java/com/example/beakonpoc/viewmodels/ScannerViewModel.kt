@@ -1,17 +1,14 @@
 package com.example.beakonpoc.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.example.beakonpoc.models.BluetoothAdapterWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
-    val bleManager: BluetoothAdapterWrapper,
-    application: Application
-) : AndroidViewModel(application) {
-
+class ScannerViewModel @Inject constructor(
+    private val bleManager: BluetoothAdapterWrapper
+) : ViewModel() {
     val beaconLiveData = bleManager.updateBeacon()
 
     fun startScan() {
@@ -23,13 +20,8 @@ class MainActivityViewModel @Inject constructor(
         bleManager.stopScan()
     }
 
-    fun isBluetoothEnable(): Boolean {
-        return bleManager.isEnable()
-    }
-
     override fun onCleared() {
         super.onCleared()
         bleManager.stopScan()
     }
-
 }

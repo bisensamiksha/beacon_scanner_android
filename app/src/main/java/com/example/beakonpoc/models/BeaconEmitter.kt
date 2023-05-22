@@ -13,26 +13,14 @@ import com.example.beakonpoc.utils.Utils
 import javax.inject.Inject
 
 class BeaconEmitter @Inject constructor(
-    private val context: Context
+    context: Context
 ) {
 
     private val bluetoothManager =
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-    private val bluetoothAdapter = bluetoothManager.adapter
-    private var bluetoothLeAdvertiser: BluetoothLeAdvertiser? =
-        bluetoothAdapter?.bluetoothLeAdvertiser
 
-    private val advertisingCallback = object : AdvertiseCallback() {
-        override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
-            super.onStartSuccess(settingsInEffect)
-            Log.d("BLE Logs", "Advertising started successfully ${settingsInEffect.toString()}")
-        }
-
-        override fun onStartFailure(errorCode: Int) {
-            super.onStartFailure(errorCode)
-            Log.d("BLE Logs", "Advertising failed to start $errorCode")
-        }
-    }
+    private var callbackMap: MutableMap<String, AdvertiseCallback> = mutableMapOf()
+    private var advertiserMap: MutableMap<String, BluetoothLeAdvertiser> = mutableMapOf()
 
     fun startIBeacon(uuid: String, major: Int, minor: Int) {
         val uuidHex = uuid.replace("-", "")
@@ -40,28 +28,50 @@ class BeaconEmitter @Inject constructor(
         val minorHex = String.format("%04X", minor)
 
         val iBeaconDataString = "$uuidHex$majorHex$minorHex"
-        startAdvertising(iBeaconDataString, BeaconType.IBEACON)
+        startAdvertising(iBeaconDataString, BeaconType.IBEACON, uuid)
     }
 
     fun startEddystone(namespace: String, instance: String?) {
         val eddystoneData = "$namespace$instance"
-        startAdvertising(eddystoneData, BeaconType.EDDYSTONE)
+        startAdvertising(eddystoneData, BeaconType.EDDYSTONE, eddystoneData)
     }
 
-    fun stopAdvertising() {
-        bluetoothLeAdvertiser?.stopAdvertising(advertisingCallback)
+    fun stopEmitting(uuid: String) {
+
+        val callback = callbackMap[uuid]
+        val advertiser = advertiserMap[uuid]
+
+        advertiser?.stopAdvertising(callback)
+
+        advertiserMap.remove(uuid)
+        callbackMap.remove(uuid)
     }
 
-    private fun startAdvertising(data: String, type: BeaconType) {
-        if (bluetoothLeAdvertiser == null) {
-            bluetoothLeAdvertiser = bluetoothManager.adapter.bluetoothLeAdvertiser
+
+    private fun startAdvertising(data: String, type: BeaconType, uuid: String) {
+        val advertisingCallback = object : AdvertiseCallback() {
+            override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                super.onStartSuccess(settingsInEffect)
+                Log.d("BLE Logs", "Advertising started successfully ${settingsInEffect.toString()}")
+            }
+
+            override fun onStartFailure(errorCode: Int) {
+                super.onStartFailure(errorCode)
+                Log.d("BLE Logs", "Advertising failed to start $errorCode")
+            }
         }
+
+
         val settings = AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
             .setConnectable(false)
             .setTimeout(0)
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
             .build()
+
+        val bluetoothAdapter = bluetoothManager.adapter
+        val bluetoothLeAdvertiser: BluetoothLeAdvertiser? =
+            bluetoothAdapter?.bluetoothLeAdvertiser
 
         when (type) {
             BeaconType.IBEACON -> {
@@ -74,7 +84,6 @@ class BeaconEmitter @Inject constructor(
                     advertiseData,
                     advertisingCallback
                 )
-
             }
             BeaconType.EDDYSTONE -> {
                 val parcelUuid = ParcelUuid.fromString(Constants.EDDYSTONE_SERVICE_UUID)
@@ -90,5 +99,7 @@ class BeaconEmitter @Inject constructor(
                 )
             }
         }
+        advertiserMap[uuid] = bluetoothLeAdvertiser!!
+        callbackMap[uuid] = advertisingCallback
     }
 }

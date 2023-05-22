@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/scannerFragment"
+        android:icon="@drawable/beacon_scaning"
+        android:title="Scanner" />
+    <item
+        android:id="@+id/emitterFragment"
+        android:icon="@drawable/beacon_emitting"
+        android:title="Emitter" />
+</menu>

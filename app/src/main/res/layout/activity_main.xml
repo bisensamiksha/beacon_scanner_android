@@ -1,124 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".views.MainActivity"
     android:background="@color/grey">
 
-    <data>
-
-        <variable
-            name="mainViewModel"
-            type="com.example.beakonpoc.viewmodels.MainActivityViewModel" />
-    </data>
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:backgroundTint="@color/grey">
-
-        <TextView
-            android:id="@+id/beaconTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="45dp"
-            android:text="@string/beacon_scanner"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:visibility="visible"
-            android:textColor="@color/black"
-            />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/beaconRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_below="@+id/beaconTitle"
-            android:layout_above="@+id/allBtnLayout"
-            tools:listitem="@layout/item_beacon"
-            android:background="@color/grey"/>
-
-        <LinearLayout
-            android:id="@+id/allBtnLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:layout_marginBottom="20dp">
-
-        <LinearLayout
-            android:id="@+id/buttonLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/grey">
-
-            <Button
-                android:id="@+id/startScan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="@string/start_scan"
-                android:backgroundTint="@color/purple_500"
-                android:textColor="@color/white"/>
-
-            <Button
-                android:id="@+id/stopScan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="@string/stop_scan"
-                android:backgroundTint="@color/purple_500"
-                android:textColor="@color/white"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/buttonEmitterLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/grey">
-
-            <Button
-                android:id="@+id/startEmitter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start Emitter"
-                android:textSize="12sp"
-                android:backgroundTint="@color/purple_500"
-                android:textColor="@color/white"/>
-
-            <Button
-                android:id="@+id/stopEmitter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:text="Stop Emitter"
-                android:textSize="12sp"
-                android:backgroundTint="@color/purple_500"
-                android:textColor="@color/white"/>
-        </LinearLayout>
-
-        </LinearLayout>
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/errorText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/buttonLayout"
-            android:layout_marginBottom="20dp"
             android:padding="20dp"
             android:text="@string/permission_not_granted"
             android:textColor="@color/red"
             android:textSize="11sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </RelativeLayout>
+        <FrameLayout
+            android:id="@+id/fragmentContainerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/bottom_menu" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

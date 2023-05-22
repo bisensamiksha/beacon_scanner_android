@@ -17,11 +17,18 @@ object Utils {
         )
     }
 
+    fun isBluetoothEnabled(context: Context?): Boolean {
+        val bluetoothManager =
+            context?.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        val bluetoothAdapter = bluetoothManager.adapter
+        return bluetoothAdapter.isEnabled
+    }
+
     fun hexToByte(hexString: String): ByteArray {
         return hexString.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
     }
 
-     fun bytesToHex(bytes: ByteArray): String {
+    fun bytesToHex(bytes: ByteArray): String {
         val hexChars = CharArray(bytes.size * 2)
         for (i in bytes.indices) {
             val v = bytes[i].toInt() and 0xFF
@@ -30,6 +37,7 @@ object Utils {
         }
         return String(hexChars)
     }
+
     private val hexArray = "0123456789ABCDEF".toCharArray()
 
     fun hexStringToByteArray(data: String): ByteArray {
