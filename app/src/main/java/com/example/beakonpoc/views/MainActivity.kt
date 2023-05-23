@@ -14,7 +14,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.beakonpoc.R
 import com.example.beakonpoc.databinding.ActivityMainBinding
-import com.example.beakonpoc.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,26 +23,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var requiredPermissions = mutableListOf<String>()
     private var permissionsToGrantList = mutableListOf<String>()
-
-    var bluetoothActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                if (Utils.isBLESupported(this)) {
-                } else {
-                    Toast.makeText(
-                        applicationContext,
-                        getString(R.string.ble_not_supported),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } else {
-                Toast.makeText(
-                    applicationContext,
-                    getString(R.string.switch_bluetooth_on),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,14 +67,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun initUI() {
+
+        setBottomNavigation()
+
+        if (!checkPermissions()) {
+            requestBLEPermissions()
+        }
+    }
+
     private fun setCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fragmentContainerView, fragment)
             commit()
         }
 
-    private fun initUI() {
-
+    private fun setBottomNavigation() {
         val scannerFragment = ScannerFragment()
         val emitterFragment = EmitterFragment()
 
@@ -107,10 +94,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.emitterFragment -> setCurrentFragment(emitterFragment)
             }
             true
-        }
-
-        if (!checkPermissions()) {
-            requestBLEPermissions()
         }
     }
 

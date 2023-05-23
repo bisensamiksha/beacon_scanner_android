@@ -41,7 +41,7 @@ class ScannerFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_scanner, container, false)
         binding.sacnnerViewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
 
         bluetoothActivityResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -68,6 +68,21 @@ class ScannerFragment : Fragment() {
 
         beaconList = ArrayList()
 
+        setupClickListeners()
+
+        binding.beaconRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.beaconRecyclerView.adapter = beaconListAdapter
+        beaconListAdapter.setData(beaconList)
+
+        viewModel.beaconLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {
+                beaconListAdapter.setData(it)
+            }
+        })
+
+    }
+
+    private fun setupClickListeners(){
         binding.startScan.setOnClickListener {
             if (checkBluetoothState()) {
                 startScanning()
@@ -79,17 +94,6 @@ class ScannerFragment : Fragment() {
         binding.stopScan.setOnClickListener {
             stopScanning()
         }
-
-        binding.beaconRecyclerView.layoutManager = LinearLayoutManager(context)
-        binding.beaconRecyclerView.adapter = beaconListAdapter
-        beaconListAdapter.setData(beaconList)
-
-        viewModel.beaconLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if (it != null) {
-                beaconListAdapter.setData(it)
-            }
-        })
-
     }
 
     private fun enableStartScanBtn(isEnable: Boolean) {
@@ -141,8 +145,8 @@ class ScannerFragment : Fragment() {
         bluetoothActivityResultLauncher.launch(enableIntent)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         stopScanning()
     }
 }

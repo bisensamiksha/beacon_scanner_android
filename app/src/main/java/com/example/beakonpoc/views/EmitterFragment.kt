@@ -40,7 +40,7 @@ class EmitterFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_emitter, container, false)
         binding.emitterViewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
 
         bluetoothActivityResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -48,7 +48,7 @@ class EmitterFragment : Fragment() {
                     initUI()
                 } else {
                     Toast.makeText(
-                        activity,
+                        requireActivity(),
                         getString(R.string.switch_bluetooth_on),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -80,8 +80,12 @@ class EmitterFragment : Fragment() {
                 viewModel.stopEmitter(beacon.uuid!!)
             }
         }
-        binding.emitterRecyclerView.layoutManager = LinearLayoutManager(context)
-        binding.emitterRecyclerView.adapter = beaconEmitterListAdapter
+
+        binding.emitterRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = beaconEmitterListAdapter
+        }
+
         beaconEmitterListAdapter.setData(beaconList)
     }
 
@@ -108,7 +112,7 @@ class EmitterFragment : Fragment() {
     }
 
     private fun checkBluetoothState(): Boolean {
-        return Utils.isBluetoothEnabled(context)
+        return Utils.isBluetoothEnabled(requireContext())
     }
 
     private fun requestBluetoothEnable() {
@@ -121,7 +125,6 @@ class EmitterFragment : Fragment() {
         beaconList.forEach {
             viewModel.stopEmitter(it.uuid!!)
         }
-        beaconList.clear()
     }
 
 }
