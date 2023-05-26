@@ -76,6 +76,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.test.espresso:espresso-contrib:3.5.1'
 
     //Test Dependencies
     testImplementation "androidx.test.ext:junit-ktx:1.1.5"
@@ -116,5 +117,7 @@ dependencies {
     androidTestImplementation "com.google.dagger:hilt-android-testing:2.46"
     // Make Hilt generate code in the androidTest folder
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:2.46"
+    //Fragment Test Dependency
+    debugImplementation "androidx.fragment:fragment-testing:1.5.7"
 
 }

@@ -6,10 +6,8 @@ import android.bluetooth.le.ScanResult
 import android.os.ParcelUuid
 import android.util.SparseArray
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.beakonpoc.di.TestBLEManager
 import com.example.beakonpoc.getOrAwaitValue
-import com.example.beakonpoc.utils.Utils
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -18,7 +16,6 @@ import io.mockk.mockkClass
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -138,5 +135,6 @@ class BLEManagerTest {
         assertThat(result?.get(0)?.namespace).isEqualTo("0102030405060708090A")
         assertThat(result?.get(0)?.instance).isEqualTo("000000000001")
     }
+
 
 }

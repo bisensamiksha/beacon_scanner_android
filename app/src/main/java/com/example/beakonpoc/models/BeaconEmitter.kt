@@ -22,7 +22,10 @@ class BeaconEmitter @Inject constructor(
     private var callbackMap: MutableMap<String, AdvertiseCallback> = mutableMapOf()
     private var advertiserMap: MutableMap<String, BluetoothLeAdvertiser> = mutableMapOf()
 
+    private var isEmitting = false
+
     fun startIBeacon(uuid: String, major: Int, minor: Int) {
+        if (uuid.isEmpty()) return //show error to the user
         val uuidHex = uuid.replace("-", "")
         val majorHex = String.format("%04X", major)
         val minorHex = String.format("%04X", minor)
@@ -32,6 +35,7 @@ class BeaconEmitter @Inject constructor(
     }
 
     fun startEddystone(namespace: String, instance: String?) {
+        if (namespace.isEmpty()) return //show error to the user
         val eddystoneData = "$namespace$instance"
         startAdvertising(eddystoneData, BeaconType.EDDYSTONE, eddystoneData)
     }
@@ -42,6 +46,7 @@ class BeaconEmitter @Inject constructor(
         val advertiser = advertiserMap[uuid]
 
         advertiser?.stopAdvertising(callback)
+        isEmitting = false
 
         advertiserMap.remove(uuid)
         callbackMap.remove(uuid)
@@ -84,6 +89,7 @@ class BeaconEmitter @Inject constructor(
                     advertiseData,
                     advertisingCallback
                 )
+                isEmitting = true
             }
             BeaconType.EDDYSTONE -> {
                 val parcelUuid = ParcelUuid.fromString(Constants.EDDYSTONE_SERVICE_UUID)
@@ -97,9 +103,14 @@ class BeaconEmitter @Inject constructor(
                     advertiseData,
                     advertisingCallback
                 )
+                isEmitting = true
             }
         }
         advertiserMap[uuid] = bluetoothLeAdvertiser!!
         callbackMap[uuid] = advertisingCallback
+    }
+
+    fun isEmitting(): Boolean{
+        return isEmitting
     }
 }

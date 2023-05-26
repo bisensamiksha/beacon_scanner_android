@@ -111,7 +111,7 @@ class MainActivityTest {
             ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback { result })
 
-        activity.bluetoothActivityResultLauncher = resultLauncher
+        //activity.bluetoothActivityResultLauncher = resultLauncher
 
         //activity.requestBluetoothEnable()
         intended(intentMatcher)
