@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.beakonpoc">
+
+    <application>
+        <activity android:name=".views.HiltTestActivity"
+            android:exported="true"/>
+
+    </application>
+
+</manifest>

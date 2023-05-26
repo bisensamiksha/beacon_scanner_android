@@ -27,9 +27,9 @@ class EmitterFragment : Fragment() {
 
     private val viewModel: EmitterViewModel by viewModels()
     private lateinit var binding: FragmentEmitterBinding
-    private lateinit var beaconList: MutableList<BeaconDataModel>
+    lateinit var beaconList: MutableList<BeaconDataModel>
 
-    lateinit var beaconEmitterListAdapter: BeaconEmitterListAdapter
+    private lateinit var beaconEmitterListAdapter: BeaconEmitterListAdapter
 
     private lateinit var bluetoothActivityResultLauncher: ActivityResultLauncher<Intent>
 
@@ -89,7 +89,7 @@ class EmitterFragment : Fragment() {
         beaconEmitterListAdapter.setData(beaconList)
     }
 
-    private fun addBeacons() {
+    fun addBeacons() {
         beaconList.add(
             BeaconDataModel(
                 BeaconType.IBEACON,
