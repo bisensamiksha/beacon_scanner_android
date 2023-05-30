@@ -32,7 +32,7 @@ class ScannerFragment : Fragment() {
     private lateinit var binding: FragmentScannerBinding
     private lateinit var beaconList: MutableList<BeaconDataModel>
 
-    private lateinit var bluetoothActivityResultLauncher: ActivityResultLauncher<Intent>
+    lateinit var bluetoothActivityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,9 +56,13 @@ class ScannerFragment : Fragment() {
                 }
             }
 
-        initUI()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initUI()
     }
 
     private fun initUI() {
@@ -136,11 +140,11 @@ class ScannerFragment : Fragment() {
         toggleBtn()
     }
 
-    private fun checkBluetoothState(): Boolean {
-        return Utils.isBluetoothEnabled(context)
+    fun checkBluetoothState(): Boolean {
+        return Utils.isBluetoothEnabled(requireContext())
     }
 
-    private fun requestBluetoothEnable() {
+    fun requestBluetoothEnable() {
         val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
         bluetoothActivityResultLauncher.launch(enableIntent)
     }
