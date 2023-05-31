@@ -2,20 +2,9 @@ package com.example.beakonpoc.utils
 
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import com.example.beakonpoc.views.MainActivity
 
 object Utils {
-
-    fun isBLESupported(activity: MainActivity): Boolean {
-        val bluetoothManager =
-            activity.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val bluetoothAdapter = bluetoothManager.adapter
-        return bluetoothAdapter.isEnabled && activity.packageManager.hasSystemFeature(
-            PackageManager.FEATURE_BLUETOOTH_LE
-        )
-    }
 
     fun isBluetoothEnabled(context: Context?): Boolean {
         val bluetoothManager =

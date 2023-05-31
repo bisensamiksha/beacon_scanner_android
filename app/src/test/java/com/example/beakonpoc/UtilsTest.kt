@@ -4,8 +4,8 @@ package com.example.beakonpoc
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.beakonpoc.utils.Utils
 import com.google.common.truth.Truth.assertThat
+import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Test
-
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -42,5 +42,14 @@ class UtilsTest {
         )
         val result = Utils.hexToByte(hexString)
         assertThat(result).isNotEqualTo(expected)
+    }
+
+
+    @Test
+    fun test_bytesToHex() {
+        val bytes = byteArrayOf(0x12, 0x34, 0xAB.toByte(), 0xCD.toByte())
+        val expectedHex = "1234ABCD"
+        val result = Utils.bytesToHex(bytes)
+        assertEquals(expectedHex, result)
     }
 }

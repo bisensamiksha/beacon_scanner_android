@@ -112,6 +112,25 @@ class EmitterFragment : Fragment() {
                 "000000000002"
             )
         )
+        beaconList.add(
+            BeaconDataModel(
+                BeaconType.IBEACON,
+                "426C7565-4368-6172-6D42-6561636F6E73",
+                "3838",
+                "4949"
+            )
+        )
+        beaconList.add(
+            BeaconDataModel(
+                BeaconType.EDDYSTONE,
+                "02C074C1AAF42FD2B822000000000002",
+                null,
+                null,
+                null,
+                "02C074C1AAF42FD2B822",
+                "000000000001"
+            )
+        )
     }
 
     fun checkBluetoothState(): Boolean {
