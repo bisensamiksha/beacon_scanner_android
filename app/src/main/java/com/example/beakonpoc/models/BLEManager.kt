@@ -1,12 +1,15 @@
 package com.example.beakonpoc.models
 
+import android.Manifest
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.ParcelUuid
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import com.example.beakonpoc.R
 import com.example.beakonpoc.utils.Constants
@@ -22,7 +25,7 @@ class BLEManager @Inject constructor(
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val bluetoothAdapter = bluetoothManager.adapter
     private var bluetoothScanner = bluetoothAdapter.bluetoothLeScanner
-    private var iBeaconData = MutableLiveData<MutableList<BeaconDataModel>?>()
+    private var iBeaconData = MutableLiveData<MutableList<BeaconDataModel>?>()//TODO Change the name
 
     private var isScanningStarted = false
 
@@ -58,6 +61,20 @@ class BLEManager @Inject constructor(
     override fun startScan() {
         if (bluetoothScanner == null) {
             bluetoothScanner = bluetoothManager.adapter.bluetoothLeScanner
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_SCAN
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             bluetoothScanner.startScan(callback)
         } else bluetoothScanner.startScan(callback)
         isScanningStarted = true
@@ -66,6 +83,20 @@ class BLEManager @Inject constructor(
 
     override fun stopScan() {
         if (isEnable()) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_SCAN
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             bluetoothScanner?.stopScan(callback)
         }
         isScanningStarted = false

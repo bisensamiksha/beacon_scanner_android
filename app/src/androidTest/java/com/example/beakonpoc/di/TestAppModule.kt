@@ -20,14 +20,14 @@ annotation class TestBeaconEmitter
 @InstallIn(SingletonComponent::class)
 object TestAppModule {
 
-    @Provides
-    @TestBLEManager
+    @Provides //provides BLEManager
+    @TestBLEManager //qualifier BLEManager dependency injection for testing
     fun provideBLEManager(application: Application): BLEManager {
         return BLEManager(application)
     }
 
-    @Provides
-    @TestBeaconEmitter
+    @Provides //provides BeaconEmitter
+    @TestBeaconEmitter //qualifier BeaconEmitter dependency injection for testing
     fun provideBeaconEmitter(application: Application): BeaconEmitter{
         return BeaconEmitter(application)
     }

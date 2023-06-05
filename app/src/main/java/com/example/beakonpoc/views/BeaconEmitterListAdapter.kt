@@ -40,7 +40,7 @@ class BeaconEmitterListAdapter(private val onItemClick: (BeaconDataModel, isStar
                     binding.minorTv.text = this.minor
                     binding.bluetoothIcon.setImageResource(R.drawable.ibeacon)
                 } else {
-                    binding.uuidTv.text = this.uuid
+                    binding.uuidLayout.visibility = View.GONE
                     binding.majorTag.setText(R.string.namespace)
                     binding.minorTag.setText(R.string.instance)
                     binding.majorTv.text = this.namespace

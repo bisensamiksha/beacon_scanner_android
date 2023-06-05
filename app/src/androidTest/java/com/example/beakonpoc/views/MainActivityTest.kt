@@ -1,17 +1,18 @@
 package com.example.beakonpoc.views
 
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.example.beakonpoc.R
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.TestCase.*
 import org.hamcrest.Matchers.not
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,37 +25,69 @@ class MainActivityTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
-    val activityRule = ActivityTestRule(MainActivity::class.java)
+    private lateinit var scenario: ActivityScenario<MainActivity>
 
-    private lateinit var activity: MainActivity
+    //TODO: check if following tests can be run without connecting real device
 
-    //Following tests require real device
     @Before
     fun setUp() {
-        activity = activityRule.activity
+        hiltRule.inject()
+        scenario = ActivityScenario.launch(MainActivity::class.java)
     }
 
+    //To test  checkPermissions() method when permission is not granted.
+    // To simulate the scenario for this test, remove all permissions from the app
     @Test
-    fun test_checkPermission_withPermissionsNotGranted() {
-        val result = activity.checkPermissions()
-        assertFalse(result)
+    fun test_checkPermission_withNoPermissionsNotGranted() {
+        scenario.onActivity {activity ->
+            val result = activity.checkPermissions()
+            assertFalse(result)
+        }
     }
 
+    //To test  checkPermissions() method when some permissions are not granted.
+    // To simulate the scenario for this test, remove one permissions from the app
     @Test
-    fun test_checkPermission_withPermissionsGranted() {
-        val result = activity.checkPermissions()
-        assertTrue(result)
+    fun test_checkPermission_withSomePermissionsNotGranted() {
+        scenario.onActivity {activity ->
+            val result = activity.checkPermissions()
+            assertFalse(result)
+        }
+    }
+
+    //To test if showRationale() method displays rationale when permission is not granted.
+    // To simulate the scenario for this test, remove permissions from the app
+    @Test
+    fun test_showRationale() {
+        scenario.onActivity{activity ->
+            assertFalse(activity.checkPermissions())
+        }
+        onView(withText("Please grant permissions to function properly.")).check(matches(isDisplayed()))
+        onView(withText("CANCEL")).perform(click())
+        onView(withText("Please grant permissions to function properly.")).check(doesNotExist())
+    }
+
+    //To test  checkPermissions() method when all the permissions are granted
+    // To simulate the scenario for this test, grant all the required permissions to the app
+    @Test
+    fun test_checkPermission_withAllPermissionsGranted() {
+        scenario.onActivity{activity ->
+            val result = activity.checkPermissions()
+            assertTrue(result)
+        }
+    }
+
+    //To test if correct view is displayed when all the permissions are granted
+    // To simulate the scenario for this test, grant all the required permissions to the app
+    @Test
+    fun test_viewDisplayed_whenPermissionsGranted(){
         onView(withId(R.id.fragmentContainerView)).check(matches(isDisplayed()))
         onView(withId(R.id.errorText)).check(matches(not(isDisplayed())))
     }
 
-    @Test
-    fun test_showRationale() {
-        assertFalse(activity.checkPermissions())
-        onView(withText("Please grant permissions to function properly.")).check(matches(isDisplayed()))
-        onView(withText("CANCEL")).perform(click())
-        onView(withText("Please grant permissions to function properly.")).check(doesNotExist())
+    @After
+    fun tearDown() {
+        scenario.close()
     }
 
 }

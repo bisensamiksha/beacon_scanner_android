@@ -1,10 +1,7 @@
 package com.example.beakonpoc.views
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.bluetooth.BluetoothAdapter
 import android.view.View
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -23,7 +20,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
-import org.junit.Assert
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -44,18 +40,19 @@ class EmitterFragmentTest {
     @Before
     fun setup() {
         hiltRule.inject()
-        launchFragmentInHiltContainer<EmitterFragment>(){
+        launchFragmentInHiltContainer<EmitterFragment>{
             fragment = this as EmitterFragment
         }
     }
 
-
+    // To check if the list of beacons is displayed
     @Test
     fun test_isRecyclerViewVisible() {
         onView(withId(R.id.emitterRecyclerView)).check(matches(isDisplayed()))
     }
 
-    @Test
+    // To test view changes on click of ibeacon
+    @Test //TODO incomplete test
     fun test_onIbeaconClick(){
         val beacon = BeaconDataModel(BeaconType.IBEACON, "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6", "13", "15")
         fragment.beaconList = ArrayList()
@@ -64,7 +61,8 @@ class EmitterFragmentTest {
             clickOnChildView(R.id.emitSwitch)))
     }
 
-    @Test
+    // To test view changes on click of eddyStone
+    @Test //TODO incomplete test
     fun test_onEddystoneClick(){
         val beacon = BeaconDataModel(
             BeaconType.EDDYSTONE,
@@ -82,30 +80,34 @@ class EmitterFragmentTest {
     }
 
     //Following tests require real device
+
+    // To test checkBluetoothState() method when bluetooth is ON
     @Test
     fun test_checkBluetoothState_withBluetoothEnabled() {
         val state = fragment.checkBluetoothState()
         assertTrue(state)
     }
 
+    // To test checkBluetoothState() method when bluetooth is OFF
     @Test
     fun test_checkBluetoothState_withBluetoothDisabled() {
         val state = fragment.checkBluetoothState()
         assertFalse(state)
     }
 
+    // To if requestBluetoothEnable() method requests user to switch ON bluetooth
+    // This test requires Bluetooth to be kept OFF
     @Test
     fun test_requestBluetoothEnable() {
         assertFalse(fragment.checkBluetoothState())
 
-        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
         val intentMatcher = IntentMatchers.hasAction(BluetoothAdapter.ACTION_REQUEST_ENABLE)
 
         Intents.init()
 
         val resultLauncher = fragment.requireActivity().activityResultRegistry.register("key",
-            ActivityResultContracts.StartActivityForResult(),
-            ActivityResultCallback { result })
+            ActivityResultContracts.StartActivityForResult()
+        ){}
 
         fragment.bluetoothActivityResultLauncher = resultLauncher
 
@@ -113,6 +115,7 @@ class EmitterFragmentTest {
         Intents.intended(intentMatcher)
     }
 
+    // Custom ViewAction to simulate recyclerview click
     private fun clickOnChildView(viewId: Int): ViewAction {
         return object : ViewAction {
             override fun getDescription(): String {

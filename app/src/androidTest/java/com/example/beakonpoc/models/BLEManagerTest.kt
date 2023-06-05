@@ -33,9 +33,10 @@ class BLEManagerTest {
 
     @Before
     fun setup() {
-        hiltRule.inject()
+        hiltRule.inject() // Inject dependencies before each test
     }
 
+    //To test stopScan()
     @Test
     fun test_stopScanning() {
         bleManager.stopScan()
@@ -43,6 +44,7 @@ class BLEManagerTest {
         assertThat(result).isFalse()
     }
 
+    //To test startScan()
     @Test
     fun test_startScanning() {
         bleManager.startScan()
@@ -50,8 +52,10 @@ class BLEManagerTest {
         assertThat(result).isTrue()
     }
 
+    //To test processPayload function when scan result data is invalid
     @Test
     fun test_processPayload_withInvalidScanResult() {
+        // Create an invalid ScanResult object
         val scanResult = ScanResult(null, 0, 0, 0, 0, 0, -50, 0, null, 0)
         bleManager.processPayload(scanResult)
 
@@ -59,8 +63,10 @@ class BLEManagerTest {
         assertThat(result).isEmpty()
     }
 
+    //To test processPayload function with valid ibeacon data
     @Test
     fun test_processPayload_withValidScanResult_forIBeacon() {
+        // Create mock BluetoothDevice and ScanRecord objects with valid iBeacon data
         val device = mockkClass(BluetoothDevice::class)
         every { device["getAddress"]() } returns "BE:FF:FA:00:22:33"
         every { device["getName"]() } returns null
@@ -98,8 +104,10 @@ class BLEManagerTest {
 
     }
 
+    //To test processPayload function with valid eddystone data
     @Test
     fun test_processPayload_withValidScanResult_forEddyStone() {
+        // Create mock BluetoothDevice and ScanRecord objects with valid Eddystone data
         val device = mockkClass(BluetoothDevice::class)
         every { device["getAddress"]() } returns "BE:FF:FA:00:22:33"
         every { device["getName"]() } returns null

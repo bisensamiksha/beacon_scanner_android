@@ -31,6 +31,7 @@ class EmitterViewModelTest {
         viewModel = EmitterViewModel(beaconEmitter)
     }
 
+    // To test if the iBeacon is emitting on call of startIBeacon()
     @Test
     fun test_startIBeacon() {
         assertFalse(beaconEmitter.isEmitting())
@@ -38,6 +39,7 @@ class EmitterViewModelTest {
         assertTrue(beaconEmitter.isEmitting())
     }
 
+    // To test if the eddyStone is emitting on call of startEddyStone()
     @Test
     fun test_startEddyStone() {
         assertFalse(beaconEmitter.isEmitting())
@@ -45,6 +47,7 @@ class EmitterViewModelTest {
         assertTrue(beaconEmitter.isEmitting())
     }
 
+    // To test if emitting is stopped on call of stopEmitter()
     @Test
     fun test_stopEmitter() {
         viewModel.startEddyStone(BeaconDataModel(BeaconType.EDDYSTONE, "0102030405060708090a000000000002", null,null,null, "0102030405060708090a", "000000000002"))

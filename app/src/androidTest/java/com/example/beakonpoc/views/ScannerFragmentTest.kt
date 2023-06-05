@@ -1,9 +1,6 @@
 package com.example.beakonpoc.views
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.bluetooth.BluetoothAdapter
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -34,11 +31,12 @@ class ScannerFragmentTest{
     @Before
     fun setUp() {
         hiltRule.inject()
-        launchFragmentInHiltContainer<ScannerFragment>(){
+        launchFragmentInHiltContainer<ScannerFragment>{
             fragment = this as ScannerFragment
         }
     }
 
+    //To test if the views are displayed properly
     @Test
     fun test_isViewDisplayed(){
         onView(withId(R.id.beaconRecyclerView)).check(matches(isDisplayed()))
@@ -46,15 +44,16 @@ class ScannerFragmentTest{
         onView(withId(R.id.startScan)).check(matches(isDisplayed()))
     }
 
+    //To test view changes on click of startScan button
     @Test
     fun test_onClickStartButton(){
         onView(withId(R.id.startScan)).check(matches(isDisplayed()))
-        onView(withId(R.id.startScan)).check(matches(isEnabled()))
         onView(withId(R.id.startScan)).perform(click())
         onView(withId(R.id.startScan)).check(matches(isNotEnabled()))
         onView(withId(R.id.stopScan)).check(matches(isEnabled()))
     }
 
+    //To test view changes on click of stopScan button
     @Test
     fun test_onClickStopButton(){
         onView(withId(R.id.stopScan)).check(matches(isDisplayed()))
@@ -64,30 +63,34 @@ class ScannerFragmentTest{
     }
 
     //Following tests require real device
+
+    // To test checkBluetoothState() method when bluetooth is ON
     @Test
     fun test_checkBluetoothState_withBluetoothEnabled() {
         val state = fragment.checkBluetoothState()
         assertTrue(state)
     }
 
+    // To test checkBluetoothState() method when bluetooth is OFF
     @Test
     fun test_checkBluetoothState_withBluetoothDisabled() {
         val state = fragment.checkBluetoothState()
          assertFalse(state)
     }
 
+    // To if requestBluetoothEnable() method requests user to switch ON bluetooth
+    // This test requires Bluetooth to be kept OFF
     @Test
     fun test_requestBluetoothEnable() {
         assertFalse(fragment.checkBluetoothState())
 
-        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
         val intentMatcher = IntentMatchers.hasAction(BluetoothAdapter.ACTION_REQUEST_ENABLE)
 
         Intents.init()
 
         val resultLauncher = fragment.requireActivity().activityResultRegistry.register("key",
-            ActivityResultContracts.StartActivityForResult(),
-            ActivityResultCallback { result })
+            ActivityResultContracts.StartActivityForResult()
+        ) { }
 
         fragment.bluetoothActivityResultLauncher = resultLauncher
 

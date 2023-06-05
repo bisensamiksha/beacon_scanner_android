@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 
+//implementation of inline function getOrAwaitValue to test LiveData
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
 fun <T> LiveData<T>.getOrAwaitValue(
     time: Long = 2,

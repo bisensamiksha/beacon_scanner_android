@@ -37,7 +37,7 @@ class ScannerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_scanner, container, false)
         binding.sacnnerViewModel = viewModel
@@ -78,11 +78,11 @@ class ScannerFragment : Fragment() {
         binding.beaconRecyclerView.adapter = beaconListAdapter
         beaconListAdapter.setData(beaconList)
 
-        viewModel.beaconLiveData.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.beaconLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 beaconListAdapter.setData(it)
             }
-        })
+        }
 
     }
 
@@ -120,7 +120,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun toggleBtn() {
+    private fun switchEnablementOfButtons() {
         if (binding.startScan.isEnabled) {
             enableStartScanBtn(false)
             enableStopScanBtn(true)
@@ -132,12 +132,12 @@ class ScannerFragment : Fragment() {
 
     private fun startScanning() {
         viewModel.startScan()
-        toggleBtn()
+        switchEnablementOfButtons()
     }
 
     private fun stopScanning() {
         viewModel.stopScan()
-        toggleBtn()
+        switchEnablementOfButtons()
     }
 
     fun checkBluetoothState(): Boolean {

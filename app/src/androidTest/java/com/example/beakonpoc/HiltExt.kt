@@ -3,7 +3,6 @@ package com.example.beakonpoc
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.StyleRes
 import androidx.core.util.Preconditions
 import androidx.fragment.app.Fragment
 import androidx.test.core.app.ActivityScenario
@@ -13,7 +12,7 @@ import com.example.beakonpoc.views.HiltTestActivity
 /**
  * launchFragmentInContainer from the androidx.fragment:fragment-testing library
  * is NOT possible to use right now as it uses a hardcoded Activity under the hood
- * (i.e. [EmptyFragmentActivity]) which is not annotated with @AndroidEntryPoint.
+ * (i.e. EmptyFragmentActivity) which is not annotated with @AndroidEntryPoint.
  *
  * As a workaround, use this function that is equivalent. It requires you to add
  * [HiltTestActivity] in the debug folder and include it in the debug AndroidManifest.xml file
@@ -21,7 +20,6 @@ import com.example.beakonpoc.views.HiltTestActivity
  */
 inline fun <reified T : Fragment> launchFragmentInHiltContainer(
     fragmentArgs: Bundle? = null,
-    @StyleRes themeResId: Int = R.style.Theme_BeakonPOC,
         crossinline action: Fragment.() -> Unit = {}
 ) {
     val startActivityIntent = Intent.makeMainActivity(
@@ -29,10 +27,7 @@ inline fun <reified T : Fragment> launchFragmentInHiltContainer(
             ApplicationProvider.getApplicationContext(),
             HiltTestActivity::class.java
         )
-    )/*.putExtra(
-        "androidx.fragment.app.testing.FragmentScenario.EmptyFragmentActivity.THEME_EXTRAS_BUNDLE_KEY",
-        themeResId
-    )*/
+    )
 
     ActivityScenario.launch<HiltTestActivity>(startActivityIntent).onActivity { activity ->
         val fragment: Fragment = activity.supportFragmentManager.fragmentFactory.instantiate(

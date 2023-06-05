@@ -21,9 +21,10 @@ class BeaconEmitterTest {
 
     @Before
     fun setup() {
-        hiltRule.inject()
+        hiltRule.inject() // Inject dependencies before each test
     }
 
+    // to test startIBeacon() with invalid uuid, major and minor
     @Test
     fun test_startIBeacon_withInvalidData() {
         beaconEmitter.startIBeacon("",
@@ -33,6 +34,7 @@ class BeaconEmitterTest {
         assertThat(result).isFalse()
     }
 
+    // to test startIBeacon() with valid uuid, major and minor
     @Test
     fun test_startIBeacon_withValidData() {
         beaconEmitter.startIBeacon("2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6",
@@ -42,14 +44,7 @@ class BeaconEmitterTest {
         assertThat(result).isTrue()
     }
 
-    @Test
-    fun test_startEddystone_withValidData() {
-        beaconEmitter.startEddystone("0102030405060708090a",
-            "000000000002")
-        val result = beaconEmitter.isEmitting()
-        assertThat(result).isTrue()
-    }
-
+    // to test startEddystone() with invalid namespace and instance
     @Test
     fun test_startEddystone_withInvalidData() {
         beaconEmitter.startEddystone("",
@@ -58,9 +53,29 @@ class BeaconEmitterTest {
         assertThat(result).isFalse()
     }
 
-
+    // to test startEddystone() with valid namespace and instance
     @Test
-    fun stopEmitting() {
+    fun test_startEddystone_withValidData() {
+        beaconEmitter.startEddystone("0102030405060708090a",
+            "000000000002")
+        val result = beaconEmitter.isEmitting()
+        assertThat(result).isTrue()
+    }
+
+    // to test stopEmitting() with valid namespace and instance
+    @Test
+    fun test_stopEmitting_withValidData() {
+        beaconEmitter.startEddystone("0102030405060708090a",
+            "000000000002")
+        beaconEmitter.stopEmitting("2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6")
+        val result = beaconEmitter.isEmitting()
+        assertThat(result).isFalse()
+    }
+
+    //TODO: correct function to handle this test
+    // to test stopEmitting() with valid namespace and instance
+    @Test
+    fun test_stopEmitting_withInvalidData() {
         beaconEmitter.startEddystone("0102030405060708090a",
             "000000000002")
         beaconEmitter.stopEmitting("2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6")

@@ -1,6 +1,5 @@
 package com.example.beakonpoc.viewmodels
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.beakonpoc.di.TestBLEManager
 import com.example.beakonpoc.models.BLEManager
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -18,9 +17,6 @@ class ScannerViewModelTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
-
     private lateinit var viewModel: ScannerViewModel
 
     @Inject
@@ -33,15 +29,15 @@ class ScannerViewModelTest {
         viewModel = ScannerViewModel(bleManager)
     }
 
+    // To test if the scanning is started on call of startScan()
     @Test
     fun test_startScan() {
         assertFalse(bleManager.isScanning())
         viewModel.startScan()
-
         assertTrue(bleManager.isScanning())
-        viewModel.stopScan()
     }
 
+    // To test if the scanning is stopped on call of stopScan()
     @Test
     fun test_stopScan() {
         viewModel.startScan()

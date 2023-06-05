@@ -13,10 +13,6 @@ object Utils {
         return bluetoothAdapter.isEnabled
     }
 
-    fun hexToByte(hexString: String): ByteArray {
-        return hexString.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
-    }
-
     fun bytesToHex(bytes: ByteArray): String {
         val hexChars = CharArray(bytes.size * 2)
         for (i in bytes.indices) {
@@ -38,7 +34,6 @@ object Utils {
             val byte = hex.toInt(16).toByte()
             byteArray[i] = byte
         }
-        Log.d("BLE Logs", "byteArray is  $byteArray")
         return byteArray
     }
 }

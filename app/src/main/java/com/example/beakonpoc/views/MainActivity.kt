@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         setCurrentFragment(scannerFragment)
 
-        binding.bottomNav.setOnNavigationItemSelectedListener {
+        binding.bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.scannerFragment -> setCurrentFragment(scannerFragment)
                 R.id.emitterFragment -> setCurrentFragment(emitterFragment)

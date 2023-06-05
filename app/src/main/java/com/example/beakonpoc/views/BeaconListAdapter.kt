@@ -1,6 +1,7 @@
 package com.example.beakonpoc.views
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +37,7 @@ class BeaconListAdapter @Inject constructor() : RecyclerView.Adapter<BeaconListA
                     binding.distance.text = this.rssi
                     binding.bluetoothIcon.setImageResource(R.drawable.ibeacon)
                 }else{
-                    binding.uuidTv.text = this.uuid
+                    binding.uuidLayout.visibility = View.GONE
                     binding.majorTag.setText(R.string.namespace)
                     binding.minorTag.setText(R.string.instance)
                     binding.majorTv.text = this.namespace

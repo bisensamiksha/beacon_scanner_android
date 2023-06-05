@@ -36,7 +36,7 @@ class EmitterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_emitter, container, false)
         binding.emitterViewModel = viewModel
@@ -63,7 +63,7 @@ class EmitterFragment : Fragment() {
         initUI()
     }
 
-    fun initUI() {
+    private fun initUI() {
 
         beaconList = ArrayList()
 
@@ -92,7 +92,7 @@ class EmitterFragment : Fragment() {
         beaconEmitterListAdapter.setData(beaconList)
     }
 
-    fun addBeacons() {
+    private fun addBeacons() {
         beaconList.add(
             BeaconDataModel(
                 BeaconType.IBEACON,
