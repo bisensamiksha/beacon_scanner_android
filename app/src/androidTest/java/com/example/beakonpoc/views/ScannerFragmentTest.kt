@@ -66,19 +66,19 @@ class ScannerFragmentTest{
 
     // To test checkBluetoothState() method when bluetooth is ON
     @Test
-    fun test_checkBluetoothState_withBluetoothEnabled() {
+    fun test_checkBluetoothState_withBluetoothON() {
         val state = fragment.checkBluetoothState()
         assertTrue(state)
     }
 
     // To test checkBluetoothState() method when bluetooth is OFF
     @Test
-    fun test_checkBluetoothState_withBluetoothDisabled() {
+    fun test_checkBluetoothState_withBluetoothOFF() {
         val state = fragment.checkBluetoothState()
          assertFalse(state)
     }
 
-    // To if requestBluetoothEnable() method requests user to switch ON bluetooth
+    // To test if requestBluetoothEnable() method requests user to switch ON bluetooth
     // This test requires Bluetooth to be kept OFF
     @Test
     fun test_requestBluetoothEnable() {

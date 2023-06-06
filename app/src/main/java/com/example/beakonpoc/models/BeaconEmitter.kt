@@ -28,7 +28,7 @@ class BeaconEmitter @Inject constructor(
     private var isEmitting = false
 
     fun startIBeacon(uuid: String, major: Int, minor: Int) {
-        if (uuid.isEmpty()) return //show error to the user
+        if (uuid.isEmpty()) return //TODO: show error to the user
         val uuidHex = uuid.replace("-", "")
         val majorHex = String.format("%04X", major)
         val minorHex = String.format("%04X", minor)
@@ -38,7 +38,7 @@ class BeaconEmitter @Inject constructor(
     }
 
     fun startEddystone(namespace: String, instance: String?) {
-        if (namespace.isEmpty()) return //show error to the user
+        if (namespace.isEmpty()) return //TODO: show error to the user
         val eddystoneData = "$namespace$instance"
         startAdvertising(eddystoneData, BeaconType.EDDYSTONE, eddystoneData)
     }
@@ -137,7 +137,7 @@ class BeaconEmitter @Inject constructor(
                 isEmitting = true
             }
         }
-        advertiserMap[uuid] = bluetoothLeAdvertiser!!
+        bluetoothLeAdvertiser?.let { advertiserMap[uuid] = it }
         callbackMap[uuid] = advertisingCallback
     }
 

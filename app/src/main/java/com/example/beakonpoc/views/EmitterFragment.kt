@@ -80,7 +80,7 @@ class EmitterFragment : Fragment() {
                     BeaconType.EDDYSTONE -> viewModel.startEddyStone(beacon)
                 }
             } else {
-                viewModel.stopEmitter(beacon.uuid!!)
+                beacon.uuid?.let { viewModel.stopEmitter(it) }
             }
         }
 
@@ -145,7 +145,7 @@ class EmitterFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         beaconList.forEach {
-            viewModel.stopEmitter(it.uuid!!)
+            it.uuid?.let { uuid -> viewModel.stopEmitter(uuid) }
         }
     }
 

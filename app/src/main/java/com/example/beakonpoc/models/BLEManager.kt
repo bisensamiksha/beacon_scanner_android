@@ -136,7 +136,7 @@ class BLEManager @Inject constructor(
                 rssi.toString()
             )
 
-            for (i in currentList?.indices!!) {
+            for (i in currentList?.indices!!) { //TODO: remove !!
                 if (currentList[i].uuid == newBeacon.uuid) {
                     currentList[i] = newBeacon
                     hasBeacon = true
@@ -183,7 +183,7 @@ class BLEManager @Inject constructor(
                     instance
                 )
 
-                for (i in currentList?.indices!!) {
+                for (i in currentList?.indices!!) { //TODO: remove !!
                     if (currentList[i].uuid == newBeacon.uuid) {
                         currentList[i] = newBeacon
                         hasBeacon = true

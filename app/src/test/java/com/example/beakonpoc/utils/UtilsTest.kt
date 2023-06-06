@@ -1,8 +1,7 @@
-package com.example.beakonpoc
+package com.example.beakonpoc.utils
 
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.beakonpoc.utils.Utils
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith

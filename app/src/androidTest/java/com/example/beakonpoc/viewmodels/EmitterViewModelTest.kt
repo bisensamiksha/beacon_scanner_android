@@ -55,4 +55,6 @@ class EmitterViewModelTest {
         viewModel.stopEmitter("0102030405060708090a000000000002")
         assertFalse(beaconEmitter.isEmitting())
     }
+
+    //TODO: Test stopEmitter with invalid data, need to modify the function
 }

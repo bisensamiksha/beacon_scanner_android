@@ -12,11 +12,15 @@ class EmitterViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun startIBeacon(beacon: BeaconDataModel) {
-        beaconEmitter.startIBeacon(beacon.uuid!!, beacon.major!!.toInt(), beacon.minor!!.toInt())
+        if(beacon.uuid != null && beacon.major != null && beacon.minor != null){
+            beaconEmitter.startIBeacon(beacon.uuid, beacon.major.toInt(), beacon.minor.toInt())
+        }
     }
 
     fun startEddyStone(beacon: BeaconDataModel) {
-        beaconEmitter.startEddystone(beacon.namespace!!, beacon.instance!!)
+        if(beacon.namespace != null && beacon.instance != null){
+            beaconEmitter.startEddystone(beacon.namespace, beacon.instance)
+        }
     }
 
     fun stopEmitter(uuid: String) {
